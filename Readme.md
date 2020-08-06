@@ -1,6 +1,6 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
-* Студент: [Андрей Решетов](https://up.htmlacademy.ru/javascript/20/user/647095).
+* Студент: [Андрей Решетов](https://htmlacademy.ru/profile/id647095).
 * Наставник: [Алексей Балесный](https://htmlacademy.ru/profile/id221665).
 
 ---
