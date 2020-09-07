@@ -41,6 +41,29 @@ export const getSortedEventsDates = (events) => {
   }, {});
 };
 
+export const RenderPosition = {
+  AFTERBEGIN: `AFTERBEGIN`,
+  BEFOREEND: `BEFOREEND`
+};
+
+export const renderNode = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
 export const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstElementChild;
 };
