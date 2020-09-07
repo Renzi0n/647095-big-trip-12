@@ -1,11 +1,16 @@
 import {generateSuffix} from '../utils.js';
 
+const MAX_OFFERS = 3;
+
 const createEventOffersTemplate = (offers) => {
-  return offers.map((offer) => `<li class="event__offer">
-      <span class="event__offer-title">${offer.title}</span>
-      &plus;
-      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
-    </li>`).join(``);
+  return offers
+    .filter((offer) => offer.check)
+    .slice(0, MAX_OFFERS)
+    .map((offer) => `<li class="event__offer">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+      </li>`).join(``);
 };
 
 const getTimeOfDate = (date) => {
@@ -20,8 +25,9 @@ const getEventDuration = (timeStart, timeOver) => {
 
   const minInHour = `${min % 60}M`;
   const hours = min < 60 ? `` : `${Math.trunc(Math.round(min / 60))}H `;
+  const days = min < (60 * 24) ? `` : `${Math.trunc(Math.round(min / (60 * 24)))}D `;
 
-  return hours + minInHour;
+  return `${days}${hours}${minInHour}`;
 };
 
 export const createEventTemplate = (eventsData) => {

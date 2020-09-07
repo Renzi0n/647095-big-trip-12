@@ -3,7 +3,6 @@ import {getRandomInteger, getRandomElement, getRandomNumberElements, getRandomBo
 const CITIES = [`London`, `Paris`, `Keln`, `Moscow`, `Liverpool`, `Manchester`];
 const MAX_EVENT_PRICE = 1000;
 const MAX_DESCRIPTIONS = 5;
-const MAX_OFFERS = 3;
 const MAX_DAYS_GAP = 7;
 const PLACE_DESCRIPTION = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -23,8 +22,10 @@ const OFFERS = [`breakfast`, `uber`, `seats`, `luggage`, `comfort`, `radio`, `di
 
 
 const generatePlaceInfo = () => {
-  let photos = [];
-  for (let i = 0; i < getRandomInteger(1, MAX_DESCRIPTIONS); i++) {
+  const photos = [];
+  const photosCount = getRandomInteger(1, MAX_DESCRIPTIONS);
+
+  for (let i = 0; i < photosCount; i++) {
     photos.push(PHOTO_SRC + getRandomInteger(0, MAX_DESCRIPTIONS));
   }
 
@@ -34,16 +35,23 @@ const generatePlaceInfo = () => {
   };
 };
 
-const offersForEvent = OFFERS.reduce(
-    (acc, type) =>
+const placeInfoForCities = CITIES.reduce(
+    (acc, city) =>
       Object.assign(acc, {
-        [type]: {
-          title: type,
+        [city]: generatePlaceInfo()
+      }),
+    {}
+);
+
+const offersForEvent = OFFERS.reduce(
+    (acc, offer) =>
+      Object.assign(acc, {
+        [offer]: {
+          title: offer,
           price: getRandomInteger(0, MAX_EVENT_PRICE),
           check: getRandomBooleanValue(),
         }
-      }),
-    {}
+      }), {}
 );
 
 const offersForType = TYPES.reduce(
@@ -53,7 +61,7 @@ const offersForType = TYPES.reduce(
           .sort(() => {
             return getRandomInteger(-1, 1);
           })
-          .slice(0, getRandomInteger(MAX_OFFERS))
+          .slice(0, getRandomInteger(1, OFFERS.length))
       }),
     {}
 );
@@ -65,24 +73,25 @@ const generateDate = () => {
   currentDate.setTime(getRandomInteger(currentDate.getTime(), currentDate.getTime() + 24 * 360 * 1000));
   currentDate.setDate(currentDate.getDate() + daysGap);
 
-  return new Date(currentDate);
+  return currentDate;
 };
 
 export const generateEvent = () => {
   const type = getRandomElement(TYPES);
-  const offers = offersForType[type].map((it) => {
-    return offersForEvent[it];
-  });
+  const city = getRandomElement(CITIES);
+  const offers = offersForType[type].map((it) => Object.assign({ }, offersForEvent[it]));
+
   const date = generateDate();
-  const timeOver = new Date(new Date(date).setTime(getRandomInteger(date.getTime(), date.getTime() + 24 * 360 * 1000)));
+  const timeOver = new Date(date.getTime());
+  timeOver.setTime(getRandomInteger(date.getTime(), date.getTime() + 24 * 360 * 1000));
 
   return {
     type,
     offers,
-    city: getRandomElement(CITIES),
+    city,
     price: getRandomInteger(0, MAX_EVENT_PRICE),
     date,
     timeOver,
-    placeInfo: generatePlaceInfo(),
+    placeInfo: placeInfoForCities[city],
   };
 };
