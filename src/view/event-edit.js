@@ -1,4 +1,5 @@
-import {generateSuffix, createElement} from '../utils.js';
+import AbstractView from './abstract.js';
+import {generateSuffix} from '../utils/event.js';
 import {TRANSPORT_TYPES, PLACE_TYPES} from '../consts.js';
 
 
@@ -50,17 +51,7 @@ const createEventEditOffersTemplate = (offers) => {
 };
 
 const createEventEditTemplate = (event) => {
-  const {
-    type = `Flight`,
-    offers = [
-      {title: `uber`, price: 30, check: true}
-    ],
-    city = ``,
-    price = ``,
-    date = new Date(`2019-03-18T00:00`),
-    timeOver = new Date(`2019-03-18T01:00`),
-    placeInfo
-  } = event;
+  const {type, offers, city, price, date, timeOver, placeInfo} = event;
 
   return (
     `<li class="trip-events__item">
@@ -153,26 +144,50 @@ const createEventEditTemplate = (event) => {
   );
 };
 
-export default class EventEdit {
+export default class EventEdit extends AbstractView {
   constructor(event) {
-    this._event = event;
+    super();
 
-    this._element = null;
+    this._event = event || this._getDefaultEvent();
+
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formCloseHandler = this._formCloseHandler.bind(this);
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setFormCloseHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formCloseHandler);
   }
 
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  _formCloseHandler() {
+    this._callback.formSubmit();
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  _getDefaultEvent() {
+    return {
+      type: `Flight`,
+      offers: [
+        {title: `uber`, price: 30, check: true}
+      ],
+      city: ``,
+      price: ``,
+      date: new Date(`2019-03-18T00:00`),
+      timeOver: new Date(`2019-03-18T01:00`),
+      placeInfo: {}
+    };
   }
 }

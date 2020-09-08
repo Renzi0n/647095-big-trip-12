@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomElement, getRandomNumberElements, getRandomBooleanValue} from '../utils.js';
+import {getRandomInteger, getRandomElement, getRandomNumberElements, getRandomBooleanValue} from '../utils/common.js';
 
 const CITIES = [`London`, `Paris`, `Keln`, `Moscow`, `Liverpool`, `Manchester`];
 const MAX_EVENT_PRICE = 1000;
