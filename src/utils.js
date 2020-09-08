@@ -46,7 +46,7 @@ export const RenderPosition = {
   BEFOREEND: `BEFOREEND`
 };
 
-export const renderNode = (container, element, place) => {
+export const render = (container, element, place) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
@@ -57,7 +57,7 @@ export const renderNode = (container, element, place) => {
   }
 };
 
-export const render = (container, template, place) => {
+export const renderTemplate = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
