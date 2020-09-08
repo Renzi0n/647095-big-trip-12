@@ -1,4 +1,4 @@
-import {generateSuffix} from '../utils.js';
+import {generateSuffix, createElement} from '../utils.js';
 
 const MAX_OFFERS = 3;
 
@@ -30,8 +30,8 @@ const getEventDuration = (timeStart, timeOver) => {
   return `${days}${hours}${minInHour}`;
 };
 
-export const createEventTemplate = (eventsData) => {
-  const {type, offers, city, price, date, timeOver} = eventsData;
+const createEventTemplate = (event) => {
+  const {type, offers, city, price, date, timeOver} = event;
 
   return (
     `<li class="trip-events__item">
@@ -66,3 +66,27 @@ export const createEventTemplate = (eventsData) => {
     </li>`
   );
 };
+
+export default class Event {
+  constructor(event) {
+    this._event = event;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

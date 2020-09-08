@@ -1,5 +1,6 @@
-import {generateSuffix} from '../utils.js';
+import {generateSuffix, createElement} from '../utils.js';
 import {TRANSPORT_TYPES, PLACE_TYPES} from '../consts.js';
+
 
 const humanizeDate = (date) => {
   const options = {year: `2-digit`, month: `2-digit`, day: `2-digit`, hour: `numeric`, minute: `numeric`, hour12: false};
@@ -48,7 +49,7 @@ const createEventEditOffersTemplate = (offers) => {
     </div>`).join(``);
 };
 
-export const createEventEditTemplate = (eventsData = {}) => {
+const createEventEditTemplate = (event) => {
   const {
     type = `Flight`,
     offers = [
@@ -59,7 +60,7 @@ export const createEventEditTemplate = (eventsData = {}) => {
     date = new Date(`2019-03-18T00:00`),
     timeOver = new Date(`2019-03-18T01:00`),
     placeInfo
-  } = eventsData;
+  } = event;
 
   return (
     `<li class="trip-events__item">
@@ -151,3 +152,27 @@ export const createEventEditTemplate = (eventsData = {}) => {
     </li>`
   );
 };
+
+export default class EventEdit {
+  constructor(event) {
+    this._event = event;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
