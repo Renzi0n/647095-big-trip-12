@@ -25,7 +25,6 @@ const renderEvent = (eventsList, event) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       replaceFormToEvent();
-      document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
 
@@ -75,5 +74,5 @@ Object.keys(sortedEventsDates).forEach((item, number) => {
 
   renderNode(TripDaysListComponent.getElement(), TripDayComponent.getElement(), RenderPosition.BEFOREEND);
 
-  sortedEventsDates[item].map((event) => renderEvent(tripDayEventsList, event));
+  sortedEventsDates[item].forEach((event) => renderEvent(tripDayEventsList, event));
 });
