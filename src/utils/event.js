@@ -4,7 +4,7 @@ export const generateSuffix = (type) => {
   return TRANSPORT_TYPES.includes(type) ? SUFFIX.transport : SUFFIX.place;
 };
 
-export const getSortedEventsDates = (events) => {
+export const sortEventsDates = (events) => {
   const sortedEvents = events.sort((next, prev) => { // Сортируем точки маршрута по возрастанию даты
     return next.date.getTime() - prev.date.getTime();
   });
