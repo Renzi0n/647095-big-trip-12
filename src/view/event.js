@@ -1,4 +1,5 @@
-import {generateSuffix, createElement} from '../utils.js';
+import AbstractView from './abstract.js';
+import {generateSuffix} from '../utils/event.js';
 
 const MAX_OFFERS = 3;
 
@@ -67,26 +68,26 @@ const createEventTemplate = (event) => {
   );
 };
 
-export default class Event {
+export default class Event extends AbstractView {
   constructor(event) {
+    super();
+
     this._event = event;
 
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
+  }
+
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
   }
 
   getTemplate() {
     return createEventTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 }

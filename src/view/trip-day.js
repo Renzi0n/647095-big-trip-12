@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createTripDayTemplate = (date, number) => {
   return (
@@ -16,29 +16,19 @@ const createTripDayTemplate = (date, number) => {
   );
 };
 
-export default class TripDay {
+export default class TripDay extends AbstractView {
   constructor(date, number, ...events) {
+    super();
+
     this._date = date;
     this._number = number;
     this._events = events;
 
-    this._element = null;
+    this.eventsListNode = this.getElement().querySelector(`.trip-events__list`);
   }
 
   getTemplate() {
     return createTripDayTemplate(this._date, this._number, this._events);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
