@@ -17,3 +17,11 @@ export const sortEventsDates = (events) => {
     });
   }, {});
 };
+
+export const sortEventsPrice = (eventA, eventB) => {
+  return eventB.price - eventA.price;
+};
+
+export const sortEventsTime = (eventA, eventB) => {
+  return (eventB.timeOver - eventB.date) - (eventA.timeOver - eventA.date);
+};

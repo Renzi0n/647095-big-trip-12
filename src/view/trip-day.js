@@ -23,8 +23,6 @@ export default class TripDay extends AbstractView {
     this._date = date;
     this._number = number;
     this._events = events;
-
-    this.eventsListNode = this.getElement().querySelector(`.trip-events__list`);
   }
 
   getTemplate() {
