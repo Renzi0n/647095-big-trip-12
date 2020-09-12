@@ -1,11 +1,10 @@
 import SortView from '../view/sort.js';
 import TripDaysListView from '../view/trip-days-list.js';
 import TripDayView from '../view/trip-day.js';
-import EventView from '../view/event.js';
-import EventEditView from '../view/event-edit.js';
+import EventPresenter from './event.js';
 import NoEventsView from '../view/no-events.js';
 import {sortEventsDates, sortEventsPrice, sortEventsTime} from '../utils/event.js';
-import {render, RenderPosition, replace} from '../utils/render.js';
+import {render, RenderPosition} from '../utils/render.js';
 
 
 const SortType = {
@@ -101,30 +100,7 @@ export default class Trip {
   }
 
   _renderEvent(container, event) {
-    const eventComponent = new EventView(event);
-    const eventEditComponent = new EventEditView(event);
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        evt.preventDefault();
-        replaceFormToEvent();
-      }
-    };
-
-    const replaceEventToForm = () => {
-      replace(eventEditComponent, eventComponent);
-      document.addEventListener(`keydown`, onEscKeyDown);
-    };
-
-    const replaceFormToEvent = () => {
-      replace(eventComponent, eventEditComponent);
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    };
-
-    eventComponent.setEditClickHandler(replaceEventToForm);
-    eventEditComponent.setFormCloseHandler(replaceFormToEvent);
-    eventEditComponent.setFormSubmitHandler(replaceFormToEvent);
-
-    render(container, eventComponent, RenderPosition.BEFOREEND);
+    const eventPresenter = new EventPresenter(container);
+    eventPresenter.init(event);
   }
 }
