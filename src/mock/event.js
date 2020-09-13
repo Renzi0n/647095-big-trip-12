@@ -21,6 +21,8 @@ const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Drive`, `Flight`, `Transport`, `
 const OFFERS = [`breakfast`, `uber`, `seats`, `luggage`, `comfort`, `radio`, `dinner`];
 
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 const generatePlaceInfo = () => {
   const photos = [];
   const photosCount = getRandomInteger(1, MAX_DESCRIPTIONS);
@@ -93,5 +95,6 @@ export const generateEvent = () => {
     date,
     timeOver,
     placeInfo: placeInfoForCities[city],
+    id: generateId(),
   };
 };

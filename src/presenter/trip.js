@@ -4,7 +4,7 @@ import TripDayView from '../view/trip-day.js';
 import EventPresenter from './event.js';
 import NoEventsView from '../view/no-events.js';
 import {sortEventsDates, sortEventsPrice, sortEventsTime} from '../utils/event.js';
-import {render, RenderPosition} from '../utils/render.js';
+import {render, RenderPosition, remove} from '../utils/render.js';
 
 
 const SortType = {
@@ -17,6 +17,8 @@ const SortType = {
 export default class Trip {
   constructor(tripContainer) {
     this._tripContainer = tripContainer;
+    this._eventPresenter = {};
+    this._tripDays = {};
 
     this._sortComponent = new SortView();
     this._tripDaysListComponent = new TripDaysListView();
@@ -67,7 +69,13 @@ export default class Trip {
   }
 
   _clearTripDaysList() {
-    this._tripDaysListComponent.getElement().innerHTML = ``;
+    Object
+      .values(this._tripDays)
+      .forEach((day) => remove(day));
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._eventPresenter = {};
   }
 
   _renderSort() {
@@ -96,11 +104,14 @@ export default class Trip {
   _renderTripDay(date) {
     render(this._tripDaysListComponent, this._tripDayComponent, RenderPosition.BEFOREEND);
 
+    this._tripDays[date] = this._tripDayComponent;
+
     this._renderEvents(this._tripDayEventsList, this._sortedEventsDates[date]);
   }
 
   _renderEvent(container, event) {
     const eventPresenter = new EventPresenter(container);
     eventPresenter.init(event);
+    this._eventPresenter[event.id] = eventPresenter;
   }
 }
