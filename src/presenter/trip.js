@@ -5,6 +5,7 @@ import EventPresenter from './event.js';
 import NoEventsView from '../view/no-events.js';
 import {sortEventsDates, sortEventsPrice, sortEventsTime} from '../utils/event.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
+import {updateItem} from "../utils/common.js";
 
 
 const SortType = {
@@ -24,6 +25,7 @@ export default class Trip {
     this._tripDaysListComponent = new TripDaysListView();
     this._noEventsComponent = new NoEventsView();
 
+    this._handleEventChange = this._handleEventChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
@@ -38,6 +40,15 @@ export default class Trip {
     this._renderSort();
 
     this._renderTripDays();
+  }
+
+  _handleEventChange(updatedTask) {
+    this._events = updateItem(this._events, updatedTask);
+    this._sortEvents = updateItem(this._sortEvents, updatedTask);
+
+    this._eventPresenter[updatedTask.id].init(updatedTask);
+
+    this._sortedEventsDates = sortEventsDates(this._events);
   }
 
   _sortTasks(sortType) {
