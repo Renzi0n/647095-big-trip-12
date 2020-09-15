@@ -96,5 +96,6 @@ export const generateEvent = () => {
     timeOver,
     placeInfo: placeInfoForCities[city],
     id: generateId(),
+    isFavorite: getRandomBooleanValue(),
   };
 };
