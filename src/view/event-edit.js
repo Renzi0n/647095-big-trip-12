@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import {generateSuffix} from '../utils/event.js';
 import {TRANSPORT_TYPES, PLACE_TYPES} from '../consts.js';
 
@@ -41,7 +41,8 @@ const createEventEditOffersTemplate = (offers) => {
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-1"
       type="checkbox" name="event-offer-${offer.title}"
-      ${offer.check ? `checked` : ``}>
+      ${offer.check ? `checked` : ``}
+      value="${offer.title}">
       <label class="event__offer-label" for="event-offer-${offer.title}-1">
         <span class="event__offer-title">${offer.title}</span>
         &plus;
@@ -145,7 +146,7 @@ const createEventEditTemplate = (event) => {
   );
 };
 
-export default class EventEdit extends AbstractView {
+export default class EventEdit extends SmartView {
   constructor(event) {
     super();
 
@@ -153,6 +154,13 @@ export default class EventEdit extends AbstractView {
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formCloseHandler = this._formCloseHandler.bind(this);
+    this._favoriteHandler = this._favoriteHandler.bind(this);
+    this._offersHandler = this._offersHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._typesHandler = this._typesHandler.bind(this);
+    this._cityHandler = this._cityHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -169,6 +177,23 @@ export default class EventEdit extends AbstractView {
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 
+  setFavoriteHandler(callback) {
+    this._callback.handleIsFavorite = callback;
+    this.getElement().querySelector(`#event-favorite-1`).addEventListener(`click`, this._favoriteHandler);
+  }
+
+  _typesHandler(evt) {
+    if (evt.target.tagName === `INPUT`) {
+      this.updateData({
+        type: evt.target.value
+      });
+    }
+  }
+
+  _favoriteHandler() {
+    this._callback.handleIsFavorite(this._event);
+  }
+
   _formCloseHandler() {
     this._callback.formClose();
   }
@@ -176,6 +201,63 @@ export default class EventEdit extends AbstractView {
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formSubmit(this._event);
+  }
+
+  _cityHandler(evt) {
+    this.updateData({
+      city: evt.target.value
+    }, true);
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      price: evt.target.value
+    }, true);
+  }
+
+  _offersHandler(evt) {
+    if (evt.target.tagName === `INPUT`) {
+      const currentOfferIndex = this._event.offers.findIndex((offer) => offer.title === evt.target.value);
+      const newOffer = Object.assign(
+          {},
+          this._event.offers[currentOfferIndex],
+          {
+            check: !this._event.offers[currentOfferIndex].check
+          }
+      );
+
+      this.updateData({
+        offers: [
+          ...this._event.offers.slice(0, currentOfferIndex),
+          newOffer,
+          ...this._event.offers.slice(currentOfferIndex + 1)
+        ],
+      });
+    }
+  }
+
+  reset(event) {
+    this.updateData(
+        Object.assign(
+            {},
+            event
+        )
+    );
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormCloseHandler(this._callback.formClose);
+    this.setFavoriteHandler(this._callback.handleIsFavorite);
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__available-offers`).addEventListener(`click`, this._offersHandler);
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
+    this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typesHandler);
+    this.getElement().querySelector(`#event-destination-1`).addEventListener(`input`, this._cityHandler);
   }
 
   _getDefaultEvent() {
