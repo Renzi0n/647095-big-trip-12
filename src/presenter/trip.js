@@ -42,11 +42,11 @@ export default class Trip {
     this._renderTripDays();
   }
 
-  _handleEventChange(updatedTask) {
-    this._events = updateItem(this._events, updatedTask);
-    this._sortEvents = updateItem(this._sortEvents, updatedTask);
+  _handleEventChange(updatedEvent) {
+    this._events = updateItem(this._events, updatedEvent);
+    this._sortEvents = updateItem(this._sortEvents, updatedEvent);
 
-    this._eventPresenter[updatedTask.id].init(updatedTask);
+    this._eventPresenter[updatedEvent.id].init(updatedEvent);
 
     this._sortedEventsDates = sortEventsDates(this._events);
   }
@@ -121,7 +121,7 @@ export default class Trip {
   }
 
   _renderEvent(container, event) {
-    const eventPresenter = new EventPresenter(container);
+    const eventPresenter = new EventPresenter(container, this._handleEventChange);
     eventPresenter.init(event);
     this._eventPresenter[event.id] = eventPresenter;
   }

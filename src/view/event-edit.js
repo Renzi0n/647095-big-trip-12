@@ -159,7 +159,7 @@ export default class EventEdit extends AbstractView {
   }
 
   setFormCloseHandler(callback) {
-    this._callback.formSubmit = callback;
+    this._callback.formClose = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formCloseHandler);
   }
 
@@ -169,12 +169,12 @@ export default class EventEdit extends AbstractView {
   }
 
   _formCloseHandler() {
-    this._callback.formSubmit();
+    this._callback.formClose();
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(this._event);
   }
 
   _getDefaultEvent() {
