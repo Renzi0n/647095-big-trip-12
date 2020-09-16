@@ -1,11 +1,11 @@
 import SortView from '../view/sort.js';
 import TripDaysListView from '../view/trip-days-list.js';
 import TripDayView from '../view/trip-day.js';
-import EventView from '../view/event.js';
-import EventEditView from '../view/event-edit.js';
+import EventPresenter from './event.js';
 import NoEventsView from '../view/no-events.js';
 import {sortEventsDates, sortEventsPrice, sortEventsTime} from '../utils/event.js';
-import {render, RenderPosition, replace} from '../utils/render.js';
+import {render, RenderPosition, remove} from '../utils/render.js';
+import {updateItem} from "../utils/common.js";
 
 
 const SortType = {
@@ -18,12 +18,16 @@ const SortType = {
 export default class Trip {
   constructor(tripContainer) {
     this._tripContainer = tripContainer;
+    this._eventPresenter = {};
+    this._tripDays = {};
 
     this._sortComponent = new SortView();
     this._tripDaysListComponent = new TripDaysListView();
     this._noEventsComponent = new NoEventsView();
 
+    this._handleEventChange = this._handleEventChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(events) {
@@ -37,6 +41,21 @@ export default class Trip {
     this._renderSort();
 
     this._renderTripDays();
+  }
+
+  _handleEventChange(updatedEvent) {
+    this._events = updateItem(this._events, updatedEvent);
+    this._sortEvents = updateItem(this._sortEvents, updatedEvent);
+
+    this._eventPresenter[updatedEvent.id].init(updatedEvent);
+
+    this._sortedEventsDates = sortEventsDates(this._events);
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 
   _sortTasks(sortType) {
@@ -68,7 +87,13 @@ export default class Trip {
   }
 
   _clearTripDaysList() {
-    this._tripDaysListComponent.getElement().innerHTML = ``;
+    Object
+      .values(this._tripDays)
+      .forEach((day) => remove(day));
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._eventPresenter = {};
   }
 
   _renderSort() {
@@ -97,34 +122,14 @@ export default class Trip {
   _renderTripDay(date) {
     render(this._tripDaysListComponent, this._tripDayComponent, RenderPosition.BEFOREEND);
 
+    this._tripDays[date] = this._tripDayComponent;
+
     this._renderEvents(this._tripDayEventsList, this._sortedEventsDates[date]);
   }
 
   _renderEvent(container, event) {
-    const eventComponent = new EventView(event);
-    const eventEditComponent = new EventEditView(event);
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        evt.preventDefault();
-        replaceFormToEvent();
-      }
-    };
-
-    const replaceEventToForm = () => {
-      replace(eventEditComponent, eventComponent);
-      document.addEventListener(`keydown`, onEscKeyDown);
-    };
-
-    const replaceFormToEvent = () => {
-      replace(eventComponent, eventEditComponent);
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    };
-
-    eventComponent.setEditClickHandler(replaceEventToForm);
-    eventEditComponent.setFormCloseHandler(replaceFormToEvent);
-    eventEditComponent.setFormSubmitHandler(replaceFormToEvent);
-
-    render(container, eventComponent, RenderPosition.BEFOREEND);
+    const eventPresenter = new EventPresenter(container, this._handleEventChange, this._handleModeChange);
+    eventPresenter.init(event);
+    this._eventPresenter[event.id] = eventPresenter;
   }
 }
