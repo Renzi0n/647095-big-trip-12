@@ -68,19 +68,6 @@ export default class Event {
     }
   }
 
-  _replaceEventToForm() {
-    replace(this._eventEditComponent, this._eventComponent);
-    document.addEventListener(`keydown`, this._escKeyDownHandler);
-    this._changeMode();
-    this._mode = Mode.EDITING;
-  }
-
-  _replaceFormToEvent() {
-    replace(this._eventComponent, this._eventEditComponent);
-    document.removeEventListener(`keydown`, this._escKeyDownHandler);
-    this._mode = Mode.DEFAULT;
-  }
-
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
@@ -113,5 +100,18 @@ export default class Event {
 
   _handleEditClick() {
     this._replaceEventToForm();
+  }
+
+  _replaceEventToForm() {
+    replace(this._eventEditComponent, this._eventComponent);
+    document.addEventListener(`keydown`, this._escKeyDownHandler);
+    this._changeMode();
+    this._mode = Mode.EDITING;
+  }
+
+  _replaceFormToEvent() {
+    replace(this._eventComponent, this._eventEditComponent);
+    document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    this._mode = Mode.DEFAULT;
   }
 }

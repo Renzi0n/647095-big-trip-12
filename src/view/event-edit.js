@@ -167,19 +167,34 @@ export default class EventEdit extends SmartView {
     return createEventEditTemplate(this._event);
   }
 
-  setFormCloseHandler(callback) {
-    this._callback.formClose = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formCloseHandler);
+  reset(event) {
+    this.updateData(
+        Object.assign(
+            {},
+            event
+        )
+    );
   }
 
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormCloseHandler(this._callback.formClose);
+    this.setFavoriteHandler(this._callback.handleIsFavorite);
   }
 
-  setFavoriteHandler(callback) {
-    this._callback.handleIsFavorite = callback;
-    this.getElement().querySelector(`#event-favorite-1`).addEventListener(`click`, this._favoriteHandler);
+  _getDefaultEvent() {
+    return {
+      type: `Flight`,
+      offers: [
+        {title: `uber`, price: 30, check: true}
+      ],
+      city: ``,
+      price: ``,
+      date: new Date(`2019-03-18T00:00`),
+      timeOver: new Date(`2019-03-18T01:00`),
+      placeInfo: {}
+    };
   }
 
   _typesHandler(evt) {
@@ -237,22 +252,6 @@ export default class EventEdit extends SmartView {
     }
   }
 
-  reset(event) {
-    this.updateData(
-        Object.assign(
-            {},
-            event
-        )
-    );
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setFormCloseHandler(this._callback.formClose);
-    this.setFavoriteHandler(this._callback.handleIsFavorite);
-  }
-
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__available-offers`).addEventListener(`click`, this._offersHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
@@ -260,17 +259,18 @@ export default class EventEdit extends SmartView {
     this.getElement().querySelector(`#event-destination-1`).addEventListener(`input`, this._cityHandler);
   }
 
-  _getDefaultEvent() {
-    return {
-      type: `Flight`,
-      offers: [
-        {title: `uber`, price: 30, check: true}
-      ],
-      city: ``,
-      price: ``,
-      date: new Date(`2019-03-18T00:00`),
-      timeOver: new Date(`2019-03-18T01:00`),
-      placeInfo: {}
-    };
+  setFormCloseHandler(callback) {
+    this._callback.formClose = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formCloseHandler);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  setFavoriteHandler(callback) {
+    this._callback.handleIsFavorite = callback;
+    this.getElement().querySelector(`#event-favorite-1`).addEventListener(`click`, this._favoriteHandler);
   }
 }
