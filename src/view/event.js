@@ -25,8 +25,19 @@ const getEventDuration = (timeStart, timeOver) => {
   const min = Math.round(duration / 60000);
 
   const minInHour = min % 60 === 0 ? `` : `${min % 60}M`;
-  const hours = min < 60 ? `` : `${Math.round(Math.trunc(min / 60))}H `;
+  let hours = ``;
+  if (min > 60 * 24) {
+    hours = Math.round(Math.trunc(min / 60)) % 24;
+  } else if (min > 60) {
+    hours = Math.round(Math.trunc(min / 60));
+  }
   const days = min < (60 * 24) ? `` : `${Math.round(Math.trunc(min / (60 * 24)))}D `;
+
+  if (!hours) {
+    hours = ``;
+  } else {
+    hours = `${hours}H `;
+  }
 
   return `${days}${hours}${minInHour}`;
 };
