@@ -186,11 +186,11 @@ export default class EventEdit extends SmartView {
           this.getElement().querySelector(`#event-start-time-1`),
           {
             enableTime: true,
-            time_24hr: true,
+            [`time_24hr`]: true,
             dateFormat: `d/m/y H:i`,
             defaultDate: this._event.date,
             maxDate: this._event.timeOver,
-            onChange: this._dateStartChangeHandler
+            onClose: this._dateStartChangeHandler
           }
       );
     }
@@ -207,11 +207,11 @@ export default class EventEdit extends SmartView {
           this.getElement().querySelector(`#event-end-time-1`),
           {
             enableTime: true,
-            time_24hr: true,
+            [`time_24hr`]: true,
             dateFormat: `d/m/y H:i`,
             defaultDate: this._event.timeOver,
             minDate: this._event.date,
-            onChange: this._dateOverChangeHandler
+            onClose: this._dateOverChangeHandler
           }
       );
     }
