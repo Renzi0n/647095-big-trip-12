@@ -238,15 +238,6 @@ export default class EventEdit extends SmartView {
     );
   }
 
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setFormCloseHandler(this._callback.formClose);
-    this.setFavoriteHandler(this._callback.handleIsFavorite);
-    this._setStartDatepicker();
-    this._setOverDatepicker();
-  }
-
   _getDefaultEvent() {
     return {
       type: `Flight`,
@@ -259,6 +250,37 @@ export default class EventEdit extends SmartView {
       timeOver: new Date(`2019-03-18T01:00`),
       placeInfo: {}
     };
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormCloseHandler(this._callback.formClose);
+    this.setFavoriteHandler(this._callback.handleIsFavorite);
+    this._setStartDatepicker();
+    this._setOverDatepicker();
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__available-offers`).addEventListener(`click`, this._offersHandler);
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
+    this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typesHandler);
+    this.getElement().querySelector(`#event-destination-1`).addEventListener(`input`, this._cityHandler);
+  }
+
+  setFormCloseHandler(callback) {
+    this._callback.formClose = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formCloseHandler);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  setFavoriteHandler(callback) {
+    this._callback.handleIsFavorite = callback;
+    this.getElement().querySelector(`#event-favorite-1`).addEventListener(`click`, this._favoriteHandler);
   }
 
   _typesHandler(evt) {
@@ -314,27 +336,5 @@ export default class EventEdit extends SmartView {
         ],
       });
     }
-  }
-
-  _setInnerHandlers() {
-    this.getElement().querySelector(`.event__available-offers`).addEventListener(`click`, this._offersHandler);
-    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
-    this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typesHandler);
-    this.getElement().querySelector(`#event-destination-1`).addEventListener(`input`, this._cityHandler);
-  }
-
-  setFormCloseHandler(callback) {
-    this._callback.formClose = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formCloseHandler);
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
-  }
-
-  setFavoriteHandler(callback) {
-    this._callback.handleIsFavorite = callback;
-    this.getElement().querySelector(`#event-favorite-1`).addEventListener(`click`, this._favoriteHandler);
   }
 }

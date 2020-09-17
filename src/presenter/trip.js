@@ -43,21 +43,6 @@ export default class Trip {
     this._renderTripDays();
   }
 
-  _handleEventChange(updatedEvent) {
-    this._events = updateItem(this._events, updatedEvent);
-    this._sortEvents = updateItem(this._sortEvents, updatedEvent);
-
-    this._eventPresenter[updatedEvent.id].init(updatedEvent);
-
-    this._sortedEventsDates = sortEventsDates(this._events);
-  }
-
-  _handleModeChange() {
-    Object
-      .values(this._eventPresenter)
-      .forEach((presenter) => presenter.resetView());
-  }
-
   _sortTasks(sortType) {
     switch (sortType) {
       case SortType.TIME:
@@ -67,23 +52,6 @@ export default class Trip {
         this._sortEvents.sort(sortEventsPrice);
         break;
     }
-  }
-
-  _handleSortTypeChange(sortType) {
-    if (this._currentSortType === sortType) {
-      return;
-    }
-
-    this._clearTripDaysList();
-
-    if (sortType !== SortType.EVENT) {
-      this._sortTasks(sortType);
-      this._renderEvents(this._tripDaysListComponent, this._sortEvents);
-    } else {
-      this._renderTripDays();
-    }
-
-    this._currentSortType = sortType;
   }
 
   _clearTripDaysList() {
@@ -131,5 +99,39 @@ export default class Trip {
     const eventPresenter = new EventPresenter(container, this._handleEventChange, this._handleModeChange);
     eventPresenter.init(event);
     this._eventPresenter[event.id] = eventPresenter;
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
+  _handleEventChange(updatedEvent) {
+    this._events = updateItem(this._events, updatedEvent);
+    this._sortEvents = updateItem(this._sortEvents, updatedEvent);
+
+    this._eventPresenter[updatedEvent.id].init(updatedEvent);
+
+    this._sortedEventsDates = sortEventsDates(this._events);
+
+    this._handleSortTypeChange(this._currentSortType, true);
+  }
+
+  _handleSortTypeChange(sortType, isChangeData) {
+    if (this._currentSortType === sortType && !isChangeData) {
+      return;
+    }
+
+    this._clearTripDaysList();
+
+    if (sortType !== SortType.EVENT) {
+      this._sortTasks(sortType);
+      this._renderEvents(this._tripDaysListComponent, this._sortEvents);
+    } else {
+      this._renderTripDays();
+    }
+
+    this._currentSortType = sortType;
   }
 }

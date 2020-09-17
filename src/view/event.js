@@ -36,11 +36,7 @@ const getEventDuration = (timeStart, timeOver) => {
   }
   const days = min < (60 * 24) ? `` : `${Math.round(Math.trunc(min / (60 * 24)))}D `;
 
-  if (!hours) {
-    hours = ``;
-  } else {
-    hours = `${hours}H `;
-  }
+  hours = !hours ? `` : `${hours}H `;
 
   return `${days}${hours}${minInHour}`;
 };
@@ -95,13 +91,13 @@ export default class Event extends AbstractView {
     return createEventTemplate(this._event);
   }
 
-  _editClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.editClick();
-  }
-
   setEditClickHandler(callback) {
     this._callback.editClick = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
+  }
+
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 }
