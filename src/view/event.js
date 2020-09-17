@@ -1,5 +1,6 @@
 import AbstractView from './abstract.js';
 import {generateSuffix} from '../utils/event.js';
+import moment from "moment";
 
 const MAX_OFFERS = 3;
 
@@ -15,9 +16,11 @@ const createEventOffersTemplate = (offers) => {
 };
 
 const getTimeOfDate = (date) => {
-  const options = {hour: `numeric`, minute: `numeric`, hour12: false};
+  if (!(date instanceof Date)) {
+    return ``;
+  }
 
-  return date.toLocaleString(`en-US`, options);
+  return moment(date).format(`H:mm`);
 };
 
 const getEventDuration = (timeStart, timeOver) => {
