@@ -1,5 +1,6 @@
 import AbstractView from './abstract.js';
 import {generateSuffix} from '../utils/event.js';
+import moment from "moment";
 
 const MAX_OFFERS = 3;
 
@@ -15,9 +16,11 @@ const createEventOffersTemplate = (offers) => {
 };
 
 const getTimeOfDate = (date) => {
-  const options = {hour: `numeric`, minute: `numeric`, hour12: false};
+  if (!(date instanceof Date)) {
+    return ``;
+  }
 
-  return date.toLocaleString(`en-US`, options);
+  return moment(date).format(`H:mm`);
 };
 
 const getEventDuration = (timeStart, timeOver) => {
@@ -25,8 +28,15 @@ const getEventDuration = (timeStart, timeOver) => {
   const min = Math.round(duration / 60000);
 
   const minInHour = min % 60 === 0 ? `` : `${min % 60}M`;
-  const hours = min < 60 ? `` : `${Math.round(Math.trunc(min / 60))}H `;
+  let hours = ``;
+  if (min > 60 * 24) {
+    hours = Math.round(Math.trunc(min / 60)) % 24;
+  } else if (min > 60) {
+    hours = Math.round(Math.trunc(min / 60));
+  }
   const days = min < (60 * 24) ? `` : `${Math.round(Math.trunc(min / (60 * 24)))}D `;
+
+  hours = !hours ? `` : `${hours}H `;
 
   return `${days}${hours}${minInHour}`;
 };
@@ -77,13 +87,13 @@ export default class Event extends AbstractView {
     this._editClickHandler = this._editClickHandler.bind(this);
   }
 
+  getTemplate() {
+    return createEventTemplate(this._event);
+  }
+
   setEditClickHandler(callback) {
     this._callback.editClick = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
-  }
-
-  getTemplate() {
-    return createEventTemplate(this._event);
   }
 
   _editClickHandler(evt) {

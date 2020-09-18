@@ -1,6 +1,8 @@
 import SmartView from './smart.js';
 import {generateSuffix} from '../utils/event.js';
 import {TRANSPORT_TYPES, PLACE_TYPES} from '../consts.js';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 
 const humanizeDate = (date) => {
@@ -151,6 +153,8 @@ export default class EventEdit extends SmartView {
     super();
 
     this._event = event || this._getDefaultEvent();
+    this._datepickerStart = null;
+    this._datepickerOver = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formCloseHandler = this._formCloseHandler.bind(this);
@@ -159,12 +163,109 @@ export default class EventEdit extends SmartView {
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._typesHandler = this._typesHandler.bind(this);
     this._cityHandler = this._cityHandler.bind(this);
+    this._dateStartChangeHandler = this._dateStartChangeHandler.bind(this);
+    this._dateOverChangeHandler = this._dateOverChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setOverDatepicker();
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event);
+  }
+
+  _setStartDatepicker() {
+    if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerStart = null;
+    }
+
+    if (this._event.date) {
+      this._datepickerStart = flatpickr(
+          this.getElement().querySelector(`#event-start-time-1`),
+          {
+            enableTime: true,
+            [`time_24hr`]: true,
+            dateFormat: `d/m/y H:i`,
+            defaultDate: this._event.date,
+            maxDate: this._event.timeOver,
+            onClose: this._dateStartChangeHandler
+          }
+      );
+    }
+  }
+
+  _setOverDatepicker() {
+    if (this._datepickerOver) {
+      this._datepickerOver.destroy();
+      this._datepickerOver = null;
+    }
+
+    if (this._event.timeOver) {
+      this._datepickerOver = flatpickr(
+          this.getElement().querySelector(`#event-end-time-1`),
+          {
+            enableTime: true,
+            [`time_24hr`]: true,
+            dateFormat: `d/m/y H:i`,
+            defaultDate: this._event.timeOver,
+            minDate: this._event.date,
+            onClose: this._dateOverChangeHandler
+          }
+      );
+    }
+  }
+
+  _dateStartChangeHandler([userDate]) {
+    this.updateData({
+      date: userDate
+    });
+  }
+
+  _dateOverChangeHandler([userDate]) {
+    this.updateData({
+      timeOver: userDate
+    });
+  }
+
+  reset(event) {
+    this.updateData(
+        Object.assign(
+            {},
+            event
+        )
+    );
+  }
+
+  _getDefaultEvent() {
+    return {
+      type: `Flight`,
+      offers: [
+        {title: `uber`, price: 30, check: true}
+      ],
+      city: ``,
+      price: ``,
+      date: new Date(`2019-03-18T00:00`),
+      timeOver: new Date(`2019-03-18T01:00`),
+      placeInfo: {}
+    };
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormCloseHandler(this._callback.formClose);
+    this.setFavoriteHandler(this._callback.handleIsFavorite);
+    this._setStartDatepicker();
+    this._setOverDatepicker();
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__available-offers`).addEventListener(`click`, this._offersHandler);
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
+    this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typesHandler);
+    this.getElement().querySelector(`#event-destination-1`).addEventListener(`input`, this._cityHandler);
   }
 
   setFormCloseHandler(callback) {
@@ -235,42 +336,5 @@ export default class EventEdit extends SmartView {
         ],
       });
     }
-  }
-
-  reset(event) {
-    this.updateData(
-        Object.assign(
-            {},
-            event
-        )
-    );
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setFormCloseHandler(this._callback.formClose);
-    this.setFavoriteHandler(this._callback.handleIsFavorite);
-  }
-
-  _setInnerHandlers() {
-    this.getElement().querySelector(`.event__available-offers`).addEventListener(`click`, this._offersHandler);
-    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
-    this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typesHandler);
-    this.getElement().querySelector(`#event-destination-1`).addEventListener(`input`, this._cityHandler);
-  }
-
-  _getDefaultEvent() {
-    return {
-      type: `Flight`,
-      offers: [
-        {title: `uber`, price: 30, check: true}
-      ],
-      city: ``,
-      price: ``,
-      date: new Date(`2019-03-18T00:00`),
-      timeOver: new Date(`2019-03-18T01:00`),
-      placeInfo: {}
-    };
   }
 }

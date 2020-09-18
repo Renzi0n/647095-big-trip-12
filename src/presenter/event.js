@@ -68,6 +68,18 @@ export default class Event {
     }
   }
 
+  _handleIsFavorite(event) {
+    this._changeData(
+        Object.assign(
+            {},
+            event,
+            {
+              isFavorite: !event.isFavorite
+            }
+        )
+    );
+  }
+
   _replaceEventToForm() {
     replace(this._eventEditComponent, this._eventComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
@@ -87,18 +99,6 @@ export default class Event {
       this._eventEditComponent.reset(this._event);
       this._replaceFormToEvent();
     }
-  }
-
-  _handleIsFavorite(event) {
-    this._changeData(
-        Object.assign(
-            {},
-            event,
-            {
-              isFavorite: !event.isFavorite
-            }
-        )
-    );
   }
 
   _handleFormClose() {
