@@ -16,7 +16,8 @@ const SortType = {
 
 
 export default class Trip {
-  constructor(tripContainer) {
+  constructor(tripContainer, eventsModel) {
+    this._eventsModel = eventsModel;
     this._tripContainer = tripContainer;
     this._eventPresenter = {};
     this._tripDays = {};
@@ -41,6 +42,10 @@ export default class Trip {
     this._renderSort();
 
     this._renderTripDays();
+  }
+
+  _getEvents() {
+    return this._eventsModel.getEvents();
   }
 
   _sortTasks(sortType) {
