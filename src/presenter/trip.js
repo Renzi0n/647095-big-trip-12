@@ -3,9 +3,10 @@ import TripDaysListView from '../view/trip-days-list.js';
 import TripDayView from '../view/trip-day.js';
 import EventPresenter from './event.js';
 import NoEventsView from '../view/no-events.js';
+import EventNewPresenter from "./event-new.js";
 import {sortEventsDates, sortEventsPrice, sortEventsTime, filterEvents} from '../utils/event.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
-import {UpdateType, UserAction, SortType} from "../consts.js";
+import {UpdateType, UserAction, SortType, FilterType} from "../consts.js";
 
 
 export default class Trip {
@@ -28,6 +29,8 @@ export default class Trip {
 
     this._eventsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._eventNewPresenter = new EventNewPresenter(this._tripDaysListComponent.getElement(), this._handleViewAction);
   }
 
   init() {
@@ -54,6 +57,12 @@ export default class Trip {
     }
 
     return filteredEvents;
+  }
+
+  createEvent() {
+    this._currentSortType = SortType.EVENT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._eventNewPresenter.init();
   }
 
   _renderSort() {
@@ -111,6 +120,7 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._eventNewPresenter.destroy();
     Object
       .values(this._eventPresenter)
       .forEach((presenter) => presenter.resetView());
@@ -150,6 +160,8 @@ export default class Trip {
     if (this._currentSortType === sortType && !isChangeData) {
       return;
     }
+
+    this._eventNewPresenter.destroy();
 
     this._clearTripDaysList();
 

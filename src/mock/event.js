@@ -21,7 +21,7 @@ const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Drive`, `Flight`, `Transport`, `
 const OFFERS = [`breakfast`, `uber`, `seats`, `luggage`, `comfort`, `radio`, `dinner`];
 
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const generatePlaceInfo = () => {
   const photos = [];
@@ -37,7 +37,7 @@ const generatePlaceInfo = () => {
   };
 };
 
-const placeInfoForCities = CITIES.reduce(
+export const placeInfoForCities = CITIES.reduce(
     (acc, city) =>
       Object.assign(acc, {
         [city]: generatePlaceInfo()
@@ -45,7 +45,7 @@ const placeInfoForCities = CITIES.reduce(
     {}
 );
 
-const offersForEvent = OFFERS.reduce(
+export const offersForEvent = OFFERS.reduce(
     (acc, offer) =>
       Object.assign(acc, {
         [offer]: {
@@ -56,7 +56,7 @@ const offersForEvent = OFFERS.reduce(
       }), {}
 );
 
-const offersForType = TYPES.reduce(
+export const offersForType = TYPES.reduce(
     (acc, type) =>
       Object.assign(acc, {
         [type]: OFFERS

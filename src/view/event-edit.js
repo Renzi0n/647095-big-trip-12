@@ -3,6 +3,7 @@ import {generateSuffix} from '../utils/event.js';
 import {TRANSPORT_TYPES, PLACE_TYPES} from '../consts.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import {placeInfoForCities, offersForEvent, offersForType} from '../mock/event.js';
 
 
 const humanizeDate = (date) => {
@@ -152,7 +153,7 @@ export default class EventEdit extends SmartView {
   constructor(event) {
     super();
 
-    this._event = event || this._getDefaultEvent();
+    this._event = event ? event : this._getDefaultEvent();
     this._datepickerStart = null;
     this._datepickerOver = null;
 
@@ -252,16 +253,19 @@ export default class EventEdit extends SmartView {
   }
 
   _getDefaultEvent() {
+    const city = `Moscow`;
+    const type = `Flight`;
+    const placeInfo = Object.assign({}, placeInfoForCities[city]);
+    const offers = offersForType[type].map((it) => Object.assign({ }, offersForEvent[it]));
+
     return {
-      type: `Flight`,
-      offers: [
-        {title: `uber`, price: 30, check: true}
-      ],
-      city: ``,
-      price: ``,
-      date: new Date(`2019-03-18T00:00`),
-      timeOver: new Date(`2019-03-18T01:00`),
-      placeInfo: {}
+      type,
+      offers,
+      city,
+      price: `0`,
+      date: new Date(),
+      timeOver: new Date(),
+      placeInfo
     };
   }
 

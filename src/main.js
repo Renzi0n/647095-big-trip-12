@@ -26,8 +26,15 @@ const tripControlsNode = tripInfoNode.querySelector(`.trip-controls`);
 
 const filterPresenter = new FilterPresenter(tripControlsNode, filterModel, eventsModel);
 
+const menuComponent = new MenuView();
+
 render(tripInfoNode, new TripInfoView(), RenderPosition.AFTERBEGIN);
-render(tripControlsNode, new MenuView(), RenderPosition.BEFOREEND);
+render(tripControlsNode, menuComponent, RenderPosition.BEFOREEND);
 
 filterPresenter.init();
 tripPresenter.init();
+
+document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  tripPresenter.createEvent();
+});
