@@ -1,9 +1,10 @@
+import he from "he";
 import SmartView from './smart.js';
 import {generateSuffix} from '../utils/event.js';
 import {TRANSPORT_TYPES, PLACE_TYPES} from '../consts.js';
+import {placeInfoForCities, offersForEvent, offersForType} from '../mock/event.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-import {placeInfoForCities, offersForEvent, offersForType} from '../mock/event.js';
 
 
 const humanizeDate = (date) => {
@@ -87,7 +88,7 @@ const createEventEditTemplate = (event) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type} ${generateSuffix(type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(city)}" list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -112,7 +113,7 @@ const createEventEditTemplate = (event) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(`${price}`)}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
