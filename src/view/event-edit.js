@@ -158,6 +158,7 @@ export default class EventEdit extends SmartView {
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formCloseHandler = this._formCloseHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._favoriteHandler = this._favoriteHandler.bind(this);
     this._offersHandler = this._offersHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
@@ -229,6 +230,18 @@ export default class EventEdit extends SmartView {
     });
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerOver) {
+      this._datepickerOver.destroy();
+      this._datepickerOver = null;
+    } else if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerStart = null;
+    }
+  }
+
   reset(event) {
     this.updateData(
         Object.assign(
@@ -259,6 +272,7 @@ export default class EventEdit extends SmartView {
     this.setFavoriteHandler(this._callback.handleIsFavorite);
     this._setStartDatepicker();
     this._setOverDatepicker();
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setInnerHandlers() {
@@ -281,6 +295,16 @@ export default class EventEdit extends SmartView {
   setFavoriteHandler(callback) {
     this._callback.handleIsFavorite = callback;
     this.getElement().querySelector(`#event-favorite-1`).addEventListener(`click`, this._favoriteHandler);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(this._event);
   }
 
   _typesHandler(evt) {
