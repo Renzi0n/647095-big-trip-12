@@ -28,6 +28,10 @@ const isEventExpired = (date) => {
   return moment(currentDate).isAfter(date);
 };
 
+export const humanizeDate = (date) => {
+  return moment(date).format(`D/MM/YY H:mm`);
+};
+
 export const generateSuffix = (type) => {
   return TRANSPORT_TYPES.includes(type) ? SUFFIX.transport : SUFFIX.place;
 };
