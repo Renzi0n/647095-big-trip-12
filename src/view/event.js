@@ -1,6 +1,8 @@
+import he from "he";
 import AbstractView from './abstract.js';
 import {generateSuffix} from '../utils/event.js';
 import moment from "moment";
+
 
 const MAX_OFFERS = 3;
 
@@ -50,7 +52,7 @@ const createEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event ${type} icon">
         </div>
-        <h3 class="event__title">${type} ${generateSuffix(type)} ${city}</h3>
+        <h3 class="event__title">${type} ${generateSuffix(type)} ${he.encode(city)}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -62,7 +64,7 @@ const createEventTemplate = (event) => {
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${price}</span>
+          &euro;&nbsp;<span class="event__price-value">${he.encode(`${price}`)}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>

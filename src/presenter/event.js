@@ -1,6 +1,8 @@
 import EventView from '../view/event.js';
 import EventEditView from '../view/event-edit.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {UserAction, UpdateType} from "../consts.js";
+import {isDatesEqual} from "../utils/event.js";
 
 
 const Mode = {
@@ -23,6 +25,7 @@ export default class Event {
     this._handleFormClose = this._handleFormClose.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleIsFavorite = this._handleIsFavorite.bind(this);
   }
 
@@ -38,6 +41,7 @@ export default class Event {
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormCloseHandler(this._handleFormClose);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._eventEditComponent.setFavoriteHandler(this._handleIsFavorite);
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -68,18 +72,6 @@ export default class Event {
     }
   }
 
-  _handleIsFavorite(event) {
-    this._changeData(
-        Object.assign(
-            {},
-            event,
-            {
-              isFavorite: !event.isFavorite
-            }
-        )
-    );
-  }
-
   _replaceEventToForm() {
     replace(this._eventEditComponent, this._eventComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
@@ -91,6 +83,29 @@ export default class Event {
     replace(this._eventComponent, this._eventEditComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
+  }
+
+  _handleDeleteClick(event) {
+    this._changeData(
+        UserAction.DELETE_EVENT,
+        UpdateType.MINOR,
+        event
+    );
+    this._replaceFormToEvent();
+  }
+
+  _handleIsFavorite(event) {
+    this._changeData(
+        UserAction.UPDATE_EVENT,
+        UpdateType.PATCH,
+        Object.assign(
+            {},
+            event,
+            {
+              isFavorite: !event.isFavorite
+            }
+        )
+    );
   }
 
   _escKeyDownHandler(evt) {
@@ -106,8 +121,16 @@ export default class Event {
     this._replaceFormToEvent();
   }
 
-  _handleFormSubmit(event) {
-    this._changeData(event);
+  _handleFormSubmit(update) {
+    const isMajorUpdate =
+      !isDatesEqual(this._event.date, update.date) ||
+      !isDatesEqual(this._event.timeOver, update.timeOver);
+
+    this._changeData(
+        UserAction.UPDATE_EVENT,
+        isMajorUpdate ? UpdateType.MAJOR : UpdateType.PATCH,
+        update
+    );
     this._replaceFormToEvent();
   }
 
