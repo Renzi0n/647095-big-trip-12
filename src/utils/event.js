@@ -80,3 +80,21 @@ export const filterEvents = (events) => {
     [FilterType.PAST]: []
   });
 };
+
+export const getEventDuration = (timeStart, timeOver) => {
+  const duration = timeOver ? new Date(timeOver - timeStart) : timeStart;
+  const min = Math.round(duration / 60000);
+
+  const minInHour = min % 60 === 0 ? `` : `${min % 60}M`;
+  let hours = ``;
+  if (min > 60 * 24) {
+    hours = Math.round(Math.trunc(min / 60)) % 24;
+  } else if (min > 60) {
+    hours = Math.round(Math.trunc(min / 60));
+  }
+  const days = min < (60 * 24) ? `` : `${Math.round(Math.trunc(min / (60 * 24)))}D `;
+
+  hours = !hours ? `` : `${hours}H `;
+
+  return `${days}${hours}${minInHour}`;
+};
