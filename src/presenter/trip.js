@@ -18,7 +18,7 @@ export default class Trip {
     this._tripDays = {};
     this._currentSortType = SortType.EVENT;
 
-    this._tripDaysListComponent = new TripDaysListView();
+    this._tripDaysListComponent = null;
     this._noEventsComponent = new NoEventsView();
     this._sortComponent = null;
 
@@ -26,20 +26,21 @@ export default class Trip {
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._updateTrip = this._updateTrip.bind(this);
-
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
-
-    this._eventNewPresenter = new EventNewPresenter(this._tripDaysListComponent.getElement(), this._handleViewAction);
   }
 
   init() {
     this._sortedEventsDates = sortEventsDates(this._getEvents());
 
+    this._tripDaysListComponent = new TripDaysListView();
+    this._eventNewPresenter = new EventNewPresenter(this._tripDaysListComponent.getElement(), this._handleViewAction);
+
     this._currentSortType = SortType.EVENT;
 
     render(this._tripContainer, this._tripDaysListComponent, RenderPosition.BEFOREEND);
     this._renderSort();
+
+    this._eventsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
 
     this._renderTripDays();
   }
@@ -59,10 +60,20 @@ export default class Trip {
     return filteredEvents;
   }
 
-  createEvent() {
+  destroy() {
+    remove(this._sortComponent);
+    remove(this._tripDaysListComponent);
+
+    this._eventsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+
+    this._clearTripDaysList();
+  }
+
+  createEvent(callback) {
     this._currentSortType = SortType.EVENT;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._eventNewPresenter.init();
+    this._eventNewPresenter.init(callback);
   }
 
   _renderSort() {

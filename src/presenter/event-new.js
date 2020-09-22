@@ -9,6 +9,7 @@ export default class EventNew {
     this._changeData = changeData;
 
     this._eventEditComponent = null;
+    this._resetCallback = null;
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
@@ -17,7 +18,9 @@ export default class EventNew {
     this._handleIsFavorite = this._handleIsFavorite.bind(this);
   }
 
-  init() {
+  init(callback) {
+    this._resetCallback = callback;
+
     if (this._eventEditComponent !== null) {
       return;
     }
@@ -36,6 +39,10 @@ export default class EventNew {
   destroy() {
     if (this._eventEditComponent === null) {
       return;
+    }
+
+    if (this._resetCallback !== null) {
+      this._resetCallback();
     }
 
     remove(this._eventEditComponent);
