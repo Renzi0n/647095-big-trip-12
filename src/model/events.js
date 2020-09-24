@@ -94,7 +94,7 @@ export default class Events extends Observer {
         event,
         {
           type: event.type.toLowerCase(),
-          [`base_price`]: event.price,
+          [`base_price`]: +event.price,
           [`is_favorite`]: event.isFavorite,
           destination: {
             description: event.placeInfo.description,

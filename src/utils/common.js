@@ -34,5 +34,3 @@ export const updateItem = (items, update) => {
     ...items.slice(index + 1)
   ];
 };
-
-export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
