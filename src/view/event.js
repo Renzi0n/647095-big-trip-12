@@ -9,7 +9,6 @@ const MAX_OFFERS = 3;
 
 const createEventOffersTemplate = (offers) => {
   return offers
-    .filter((offer) => offer.check)
     .slice(0, MAX_OFFERS)
     .map((offer) => `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>

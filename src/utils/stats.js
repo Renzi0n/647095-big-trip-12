@@ -1,5 +1,3 @@
-import {TRANSPORT_TYPES} from '../consts.js';
-
 export const MoneyStatsOptions = {
   FLY: `Flight`,
   STAY: `Check-in`,
@@ -55,12 +53,11 @@ export const getTransportStats = (events) => {
 };
 
 export const getTimeSpentStats = (events) => {
-  return events.reduce((acc, {type, city, date, timeOver}) => {
-    const option = TRANSPORT_TYPES.includes(type) ? type : city;
-    const duration = acc[option] ? acc[option] + (timeOver - date) : (timeOver - date);
+  return events.reduce((acc, {type, date, timeOver}) => {
+    const duration = acc[type] ? acc[type] + (timeOver - date) : (timeOver - date);
 
     return Object.assign(acc, {
-      [option]: duration
+      [type]: duration
     });
   }, {});
 };
