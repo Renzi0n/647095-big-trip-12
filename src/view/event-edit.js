@@ -1,17 +1,11 @@
 import he from "he";
 import SmartView from './smart.js';
-import {generateSuffix} from '../utils/event.js';
+import {generateSuffix, humanizeDate} from '../utils/event.js';
 import {TRANSPORT_TYPES, PLACE_TYPES} from '../consts.js';
 import {placeInfoForCities, offersForEvent, offersForType} from '../mock/event.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-
-const humanizeDate = (date) => {
-  const options = {year: `2-digit`, month: `2-digit`, day: `2-digit`, hour: `numeric`, minute: `numeric`, hour12: false};
-
-  return `${date.toLocaleString(`en-GB`, options).replace(/,/, ``)} `;
-};
 
 const createEventEditTypesTemplate = (checkedType, types) => {
   return types.map((type) =>

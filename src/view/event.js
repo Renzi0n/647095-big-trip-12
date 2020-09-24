@@ -2,6 +2,7 @@ import he from "he";
 import AbstractView from './abstract.js';
 import {generateSuffix} from '../utils/event.js';
 import moment from "moment";
+import {getEventDuration} from '../utils/event.js';
 
 
 const MAX_OFFERS = 3;
@@ -23,24 +24,6 @@ const getTimeOfDate = (date) => {
   }
 
   return moment(date).format(`H:mm`);
-};
-
-const getEventDuration = (timeStart, timeOver) => {
-  const duration = new Date(timeOver - timeStart);
-  const min = Math.round(duration / 60000);
-
-  const minInHour = min % 60 === 0 ? `` : `${min % 60}M`;
-  let hours = ``;
-  if (min > 60 * 24) {
-    hours = Math.round(Math.trunc(min / 60)) % 24;
-  } else if (min > 60) {
-    hours = Math.round(Math.trunc(min / 60));
-  }
-  const days = min < (60 * 24) ? `` : `${Math.round(Math.trunc(min / (60 * 24)))}D `;
-
-  hours = !hours ? `` : `${hours}H `;
-
-  return `${days}${hours}${minInHour}`;
 };
 
 const createEventTemplate = (event) => {
