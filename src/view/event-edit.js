@@ -1,8 +1,9 @@
 import he from "he";
 import SmartView from './smart.js';
+import PlacesInfoModel from '../model/places-info.js';
+import OffersModel from '../model/offers.js';
 import {generateSuffix, humanizeDate} from '../utils/event.js';
 import {TRANSPORT_TYPES, PLACE_TYPES} from '../consts.js';
-import {placeInfoForCities, offersForEvent, offersForType} from '../mock/event.js';
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -28,25 +29,29 @@ const createEventEditPlaceInfoTemplate = (placeInfo) => {
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-        ${placeInfo.photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join(``)}
+        ${placeInfo.photos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join(``)}
         </div>
       </div>
     </section>` : ``;
 };
 
-const createEventEditOffersTemplate = (offers) => {
-  return offers.map((offer) =>
+const createEventEditOffersTemplate = (offers, type) => {
+  return OffersModel.getOffersForType(type.toLowerCase()).map(({title, price}) =>
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-1"
-      type="checkbox" name="event-offer-${offer.title}"
-      ${offer.check ? `checked` : ``}
-      value="${offer.title}">
-      <label class="event__offer-label" for="event-offer-${offer.title}-1">
-        <span class="event__offer-title">${offer.title}</span>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1"
+      type="checkbox" name="event-offer-${title}"
+      ${offers.some((offer) => offer.title === title) ? `checked` : ``}
+      value="${title}">
+      <label class="event__offer-label" for="event-offer-${title}-1">
+        <span class="event__offer-title">${title}</span>
         &plus;
-        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+        &euro;&nbsp;<span class="event__offer-price">${price}</span>
       </label>
     </div>`).join(``);
+};
+
+const createCitiesTemplate = () => {
+  return PlacesInfoModel.getPlacesInfo().map(({name}) => `<option value="${name}"></option>`).join(``);
 };
 
 const createEventEditTemplate = (event) => {
@@ -84,9 +89,7 @@ const createEventEditTemplate = (event) => {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(city)}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${createCitiesTemplate()}
             </datalist>
           </div>
 
@@ -132,7 +135,7 @@ const createEventEditTemplate = (event) => {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${createEventEditOffersTemplate(offers)}
+              ${createEventEditOffersTemplate(offers, type)}
             </div>
           </section>
 
@@ -248,19 +251,21 @@ export default class EventEdit extends SmartView {
   }
 
   _getDefaultEvent() {
-    const city = `Moscow`;
+    const city = PlacesInfoModel.getPlacesInfo()[0].name;
     const type = `Flight`;
-    const placeInfo = Object.assign({}, placeInfoForCities[city]);
-    const offers = offersForType[type].map((it) => Object.assign({ }, offersForEvent[it]));
+    const placeInfo = PlacesInfoModel.getPlacesInfoForCity(city);
 
     return {
       type,
-      offers,
+      offers: [],
       city,
       price: `0`,
       date: new Date(),
       timeOver: new Date(),
-      placeInfo
+      placeInfo: {
+        photos: placeInfo.pictures,
+        description: placeInfo.description
+      }
     };
   }
 
@@ -278,7 +283,7 @@ export default class EventEdit extends SmartView {
     this.getElement().querySelector(`.event__available-offers`).addEventListener(`click`, this._offersHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
     this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typesHandler);
-    this.getElement().querySelector(`#event-destination-1`).addEventListener(`input`, this._cityHandler);
+    this.getElement().querySelector(`#event-destination-1`).addEventListener(`change`, this._cityHandler);
   }
 
   setFormCloseHandler(callback) {
@@ -328,9 +333,18 @@ export default class EventEdit extends SmartView {
   }
 
   _cityHandler(evt) {
+    evt.preventDefault();
+    const city = evt.target.value;
+    const pictures = PlacesInfoModel.getPlacesInfoForCity(city).pictures;
+    const description = PlacesInfoModel.getPlacesInfoForCity(city).description;
+
     this.updateData({
-      city: evt.target.value
-    }, true);
+      city: evt.target.value,
+      placeInfo: {
+        photos: pictures,
+        description,
+      }
+    });
   }
 
   _priceInputHandler(evt) {
@@ -342,22 +356,26 @@ export default class EventEdit extends SmartView {
 
   _offersHandler(evt) {
     if (evt.target.tagName === `INPUT`) {
-      const currentOfferIndex = this._event.offers.findIndex((offer) => offer.title === evt.target.value);
-      const newOffer = Object.assign(
-          {},
-          this._event.offers[currentOfferIndex],
-          {
-            check: !this._event.offers[currentOfferIndex].check
-          }
-      );
+      const currentOffer = OffersModel.getOffersForType(this._event.type)
+        .filter((offer) => offer.title === evt.target.value)[0];
 
-      this.updateData({
-        offers: [
-          ...this._event.offers.slice(0, currentOfferIndex),
-          newOffer,
-          ...this._event.offers.slice(currentOfferIndex + 1)
-        ],
-      });
+      if (evt.target.checked) {
+        this.updateData({
+          offers: [
+            ...this._event.offers.slice(),
+            currentOffer
+          ]
+        });
+      } else {
+        const currentIndex = this._event.offers.findIndex((offer) => offer.title === evt.target.value);
+
+        this.updateData({
+          offers: [
+            ...this._event.offers.slice(0, currentIndex),
+            ...this._event.offers.slice(currentIndex + 1)
+          ]
+        });
+      }
     }
   }
 }

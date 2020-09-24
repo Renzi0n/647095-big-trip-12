@@ -4,23 +4,27 @@ import TripDayView from '../view/trip-day.js';
 import EventPresenter from './event.js';
 import NoEventsView from '../view/no-events.js';
 import EventNewPresenter from "./event-new.js";
+import LoadingView from "../view/loading.js";
 import {sortEventsDates, sortEventsPrice, sortEventsTime, filterEvents} from '../utils/event.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 import {UpdateType, UserAction, SortType, FilterType} from "../consts.js";
 
 
 export default class Trip {
-  constructor(tripContainer, eventsModel, filterModel) {
+  constructor(tripContainer, eventsModel, filterModel, api) {
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
     this._tripContainer = tripContainer;
     this._eventPresenter = {};
     this._tripDays = {};
     this._currentSortType = SortType.EVENT;
+    this._isLoading = true;
+    this._api = api;
 
     this._tripDaysListComponent = null;
-    this._noEventsComponent = new NoEventsView();
     this._sortComponent = null;
+    this._noEventsComponent = null;
+    this._loadingComponent = new LoadingView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -56,7 +60,6 @@ export default class Trip {
       case SortType.PRICE:
         return filteredEvents.sort(sortEventsPrice);
     }
-
     return filteredEvents;
   }
 
@@ -103,11 +106,13 @@ export default class Trip {
   }
 
   _renderTripDays() {
-    if (!this._getEvents().length) {
-      render(this._tripContainer, new NoEventsView(), RenderPosition.BEFOREEND);
+    if (!this._getEvents().length && !this._isLoading) {
+      this._noEventsComponent = new NoEventsView();
+      render(this._tripContainer, this._noEventsComponent, RenderPosition.BEFOREEND);
       return;
     }
 
+    remove(this._loadingComponent);
     Object.keys(this._sortedEventsDates).forEach((date, number) => {
       this._tripDayComponent = new TripDayView(date, ++number);
       this._tripDayEventsList = this._tripDayComponent.getElement().querySelector(`.trip-events__list`);
@@ -130,6 +135,10 @@ export default class Trip {
     this._eventPresenter[event.id] = eventPresenter;
   }
 
+  _renderLoading() {
+    render(this._tripContainer, this._loadingComponent, RenderPosition.BEFOREEND);
+  }
+
   _handleModeChange() {
     this._eventNewPresenter.destroy();
     Object
@@ -140,7 +149,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.updateEvent(updateType, update);
+        this._api.updateEvent(update).then((response) => {
+          this._eventsModel.updateEvent(updateType, response);
+        });
         break;
       case UserAction.ADD_EVENT:
         this._eventsModel.addEvent(updateType, update);
@@ -157,17 +168,25 @@ export default class Trip {
         this._eventPresenter[data.id].init(data);
         break;
       case UpdateType.MINOR:
-        this._sortedEventsDates = sortEventsDates(this._getEvents());
         this._updateTrip(this._currentSortType, true);
         break;
       case UpdateType.MAJOR:
-        this._sortedEventsDates = sortEventsDates(this._getEvents());
+        this._updateTrip(SortType.EVENT, true);
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._updateTrip(SortType.EVENT, true);
         break;
     }
   }
 
   _updateTrip(sortType, isChangeData) {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     if (this._currentSortType === sortType && !isChangeData) {
       return;
     }
@@ -181,6 +200,7 @@ export default class Trip {
     if (sortType !== SortType.EVENT) {
       this._renderEvents(this._tripDaysListComponent, this._getEvents());
     } else {
+      this._sortedEventsDates = sortEventsDates(this._getEvents());
       this._renderTripDays();
       this._renderSort();
     }

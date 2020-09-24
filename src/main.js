@@ -5,33 +5,41 @@ import FilterPresenter from "./presenter/filter.js";
 import EventsModel from "./model/events.js";
 import FilterModel from "./model/filter.js";
 import StatsView from "./view/stats.js";
-import {generateEvent} from './mock/event.js';
+import Api from "./api.js";
 import {render, RenderPosition, remove} from './utils/render.js';
-import {MenuItem} from './consts.js';
+import {MenuItem, UpdateType} from './consts.js';
 
 
-const EVENTS_COUNT = 20;
+const AUTHORIZATION = `Basic wwe53453tfdg5452`;
+const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
-
-const eventsData = new Array(EVENTS_COUNT).fill().map(generateEvent);
-
-const eventsModel = new EventsModel();
-eventsModel.setEvents(eventsData);
-
-const filterModel = new FilterModel();
 
 const tripEventsMainNode = document.querySelector(`.trip-events`);
-const tripPresenter = new TripPresenter(tripEventsMainNode, eventsModel, filterModel);
-
 const tripInfoNode = document.querySelector(`.trip-main`);
 const tripControlsNode = tripInfoNode.querySelector(`.trip-controls`);
 
-const filterPresenter = new FilterPresenter(tripControlsNode, filterModel, eventsModel);
 
+const api = new Api(END_POINT, AUTHORIZATION);
+const eventsModel = new EventsModel();
+const filterModel = new FilterModel();
+const tripPresenter = new TripPresenter(tripEventsMainNode, eventsModel, filterModel, api);
+const filterPresenter = new FilterPresenter(tripControlsNode, filterModel, eventsModel);
 const menuComponent = new MenuView();
 
+api.getAllData()
+  .then((events) => {
+    eventsModel.setEvents(UpdateType.INIT, events);
+    render(tripControlsNode, menuComponent, RenderPosition.AFTERBEGIN);
+    menuComponent.setMenuClickHandler(handleSiteMenuClick);
+  })
+  .catch(() => {
+    eventsModel.setEvents(UpdateType.INIT, []);
+    render(tripControlsNode, menuComponent, RenderPosition.AFTERBEGIN);
+    menuComponent.setMenuClickHandler(handleSiteMenuClick);
+  });
+
+
 render(tripInfoNode, new TripInfoView(), RenderPosition.AFTERBEGIN);
-render(tripControlsNode, menuComponent, RenderPosition.BEFOREEND);
 
 
 let statsComponent = null;
@@ -62,12 +70,11 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-menuComponent.setMenuClickHandler(handleSiteMenuClick);
-
-filterPresenter.init();
-tripPresenter.init();
-
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
   evt.preventDefault();
   handleSiteMenuClick(MenuItem.NEW_EVENT);
 });
+
+
+filterPresenter.init();
+tripPresenter.init();
