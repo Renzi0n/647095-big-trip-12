@@ -384,26 +384,4 @@ export default class EventEdit extends SmartView {
       }
     }
   }
-
-  static parseEventToData(event) {
-    return Object.assign(
-        {},
-        event,
-        {
-          isDisabled: false,
-          isSaving: false,
-          isDeleting: false
-        }
-    );
-  }
-
-  static parseDataToEvent(event) {
-    event = Object.assign({}, event);
-
-    delete event.isDisabled;
-    delete event.isSaving;
-    delete event.isDeleting;
-
-    return event;
-  }
 }
