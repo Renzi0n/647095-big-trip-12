@@ -34,7 +34,7 @@ export default class Event {
     this._handleIsFavorite = this._handleIsFavorite.bind(this);
   }
 
-  init(event) {
+  init(event, isFavoriting) {
     this._event = event;
 
     const prevEventComponent = this._eventComponent;
@@ -58,9 +58,11 @@ export default class Event {
       replace(this._eventComponent, prevEventComponent);
     }
 
-    if (this._mode === Mode.EDITING) {
+    if (this._mode === Mode.EDITING && !isFavoriting) {
       replace(this._eventComponent, prevEventEditComponent);
       this._mode = Mode.DEFAULT;
+    } else if (this._mode === Mode.EDITING && isFavoriting) {
+      replace(this._eventEditComponent, prevEventEditComponent);
     }
 
     remove(prevEventComponent);
@@ -132,7 +134,7 @@ export default class Event {
   _handleIsFavorite(event) {
     this._changeData(
         UserAction.UPDATE_EVENT,
-        UpdateType.PATCH,
+        UpdateType.FAVORITING,
         Object.assign(
             {},
             event,

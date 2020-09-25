@@ -149,7 +149,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventPresenter[update.id].setViewState(EventPresenterViewState.SAVING);
+        if (updateType !== UpdateType.FAVORITING) {
+          this._eventPresenter[update.id].setViewState(EventPresenterViewState.SAVING);
+        }
         this._api.updateEvent(update)
           .then((response) => {
             this._eventsModel.updateEvent(updateType, response);
@@ -183,6 +185,9 @@ export default class Trip {
 
   _handleModelEvent(data, updateType) {
     switch (updateType) {
+      case UpdateType.FAVORITING:
+        this._eventPresenter[data.id].init(data, true);
+        break;
       case UpdateType.PATCH:
         this._eventPresenter[data.id].init(data);
         break;
