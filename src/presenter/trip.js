@@ -5,6 +5,7 @@ import EventPresenter, {State as EventPresenterViewState} from './event.js';
 import NoEventsView from '../view/no-events.js';
 import EventNewPresenter from "./event-new.js";
 import LoadingView from "../view/loading.js";
+import TripInfoView from '../view/trip-info.js';
 import {sortEventsDates, sortEventsPrice, sortEventsTime, filterEvents} from '../utils/event.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 import {UpdateType, UserAction, SortType, FilterType} from "../consts.js";
@@ -47,6 +48,9 @@ export default class Trip {
     this._filterModel.addObserver(this._handleModelEvent);
 
     this._renderTripDays();
+
+    this._tripInfoComponent = new TripInfoView(this._getEvents());
+    render(document.querySelector(`.trip-main`), this._tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
 
   _getEvents() {
@@ -220,6 +224,8 @@ export default class Trip {
     this._clearTripDaysList();
 
     this._currentSortType = sortType;
+
+    this._tripInfoComponent.updateTripInfo(this._eventsModel.getEvents());
 
     if (sortType !== SortType.EVENT) {
       this._renderEvents(this._tripDaysListComponent, this._getEvents());

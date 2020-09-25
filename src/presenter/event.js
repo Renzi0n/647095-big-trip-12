@@ -165,7 +165,7 @@ export default class Event {
 
     this._changeData(
         UserAction.UPDATE_EVENT,
-        isMajorUpdate ? UpdateType.MAJOR : UpdateType.PATCH,
+        isMajorUpdate ? UpdateType.MAJOR : UpdateType.MINOR,
         update
     );
   }

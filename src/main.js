@@ -1,5 +1,4 @@
 import MenuView from './view/menu.js';
-import TripInfoView from './view/trip-info.js';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from "./presenter/filter.js";
 import EventsModel from "./model/events.js";
@@ -10,21 +9,21 @@ import {render, RenderPosition, remove} from './utils/render.js';
 import {MenuItem, UpdateType} from './consts.js';
 
 
-const AUTHORIZATION = `Basic w3we53453tfdg5452`;
+const AUTHORIZATION = `Basic we222324223fd52`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
 
 const tripEventsMainNode = document.querySelector(`.trip-events`);
-const tripInfoNode = document.querySelector(`.trip-main`);
-const tripControlsNode = tripInfoNode.querySelector(`.trip-controls`);
+const tripControlsNode = document.querySelector(`.trip-controls`);
 
 
 const api = new Api(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
-const tripPresenter = new TripPresenter(tripEventsMainNode, eventsModel, filterModel, api);
 const filterPresenter = new FilterPresenter(tripControlsNode, filterModel, eventsModel);
 const menuComponent = new MenuView();
+const tripPresenter = new TripPresenter(tripEventsMainNode, eventsModel, filterModel, api);
+
 
 api.getAllData()
   .then((events) => {
@@ -38,9 +37,8 @@ api.getAllData()
     menuComponent.setMenuClickHandler(handleSiteMenuClick);
   });
 
-
-render(tripInfoNode, new TripInfoView(), RenderPosition.AFTERBEGIN);
-
+tripPresenter.init();
+filterPresenter.init();
 
 let statsComponent = null;
 
@@ -74,7 +72,3 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (e
   evt.preventDefault();
   handleSiteMenuClick(MenuItem.NEW_EVENT);
 });
-
-
-filterPresenter.init();
-tripPresenter.init();
