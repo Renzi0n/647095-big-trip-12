@@ -25,6 +25,7 @@ export default class Trip {
     this._tripDaysListComponent = null;
     this._sortComponent = null;
     this._noEventsComponent = null;
+    this._tripInfoComponent = null;
     this._loadingComponent = new LoadingView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -49,6 +50,9 @@ export default class Trip {
 
     this._renderTripDays();
 
+    if (this._tripInfoComponent !== null) {
+      remove(this._tripInfoComponent);
+    }
     this._tripInfoComponent = new TripInfoView(this._getEvents());
     render(document.querySelector(`.trip-main`), this._tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
