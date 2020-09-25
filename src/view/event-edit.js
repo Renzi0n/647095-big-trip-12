@@ -8,13 +8,13 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 
-const createEventEditTypesTemplate = (checkedType, types) => {
+const createEventEditTypesTemplate = (checkedType, types, isDisabled) => {
   return types.map((type) =>
     `<div class="event__type-item">
       <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
       value="${type}"
       ${type === checkedType ? `checked` : ``}
-      >
+      ${isDisabled ? `disabled` : ``}>
       <label class="event__type-label event__type-label--${type.toLowerCase()}" for="event-type-${type}-1">${type}</label>
     </div>`).join(``);
 };
@@ -35,13 +35,14 @@ const createEventEditPlaceInfoTemplate = (placeInfo) => {
     </section>` : ``;
 };
 
-const createEventEditOffersTemplate = (offers, type) => {
+const createEventEditOffersTemplate = (offers, type, isDisabled) => {
   return OffersModel.getOffersForType(type.toLowerCase()).map(({title, price}) =>
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1"
       type="checkbox" name="event-offer-${title}"
       ${offers.some((offer) => offer.title === title) ? `checked` : ``}
-      value="${title}">
+      value="${title}"
+      ${isDisabled ? `disabled` : ``}>
       <label class="event__offer-label" for="event-offer-${title}-1">
         <span class="event__offer-title">${title}</span>
         &plus;
@@ -55,7 +56,7 @@ const createCitiesTemplate = () => {
 };
 
 const createEventEditTemplate = (event) => {
-  const {type, offers, city, price, date, timeOver, placeInfo, isFavorite} = event;
+  const {type, offers, city, price, date, timeOver, placeInfo, isFavorite, isDisabled, isSaving, isDeleting} = event;
 
   return (
     `<li class="trip-events__item">
@@ -72,13 +73,13 @@ const createEventEditTemplate = (event) => {
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
 
-                ${createEventEditTypesTemplate(type, TRANSPORT_TYPES)}
+                ${createEventEditTypesTemplate(type, TRANSPORT_TYPES, isDisabled)}
               </fieldset>
 
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
 
-                ${createEventEditTypesTemplate(type, PLACE_TYPES)}
+                ${createEventEditTypesTemplate(type, PLACE_TYPES, isDisabled)}
               </fieldset>
             </div>
           </div>
@@ -113,8 +114,12 @@ const createEventEditTemplate = (event) => {
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(`${price}`)}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>
+            ${isSaving ? `saving...` : `save`}
+          </button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>
+            ${isDeleting ? `deleting...` : `delete`}
+          </button>
 
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite"
           ${isFavorite ? `checked` : ``}>
@@ -135,7 +140,7 @@ const createEventEditTemplate = (event) => {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${createEventEditOffersTemplate(offers, type)}
+              ${createEventEditOffersTemplate(offers, type, isDisabled)}
             </div>
           </section>
 
@@ -262,6 +267,7 @@ export default class EventEdit extends SmartView {
       price: `0`,
       date: new Date(),
       timeOver: new Date(),
+      isFavorite: false,
       placeInfo: {
         photos: placeInfo.pictures,
         description: placeInfo.description
@@ -377,5 +383,27 @@ export default class EventEdit extends SmartView {
         });
       }
     }
+  }
+
+  static parseEventToData(event) {
+    return Object.assign(
+        {},
+        event,
+        {
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
+        }
+    );
+  }
+
+  static parseDataToEvent(event) {
+    event = Object.assign({}, event);
+
+    delete event.isDisabled;
+    delete event.isSaving;
+    delete event.isDeleting;
+
+    return event;
   }
 }
