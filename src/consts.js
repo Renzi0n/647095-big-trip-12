@@ -10,6 +10,7 @@ export const UserAction = {
   DELETE_EVENT: `DELETE_EVENT`
 };
 export const UpdateType = {
+  FAVORITING: `FAVORITING`,
   PATCH: `PATCH`,
   MINOR: `MINOR`,
   MAJOR: `MAJOR`,
