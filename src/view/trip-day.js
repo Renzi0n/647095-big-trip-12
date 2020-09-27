@@ -1,10 +1,10 @@
 import AbstractView from './abstract.js';
 
-const createTripDayTemplate = (date, number) => {
+const createTripDayTemplate = (date, counter) => {
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">
-        <span class="day__counter">${number}</span>
+        <span class="day__counter">${counter}</span>
         <time class="day__date" datetime="${date}">
           ${new Date(date).toLocaleDateString(`en-US`, {month: `short`, day: `numeric`})}
         </time>
@@ -17,16 +17,16 @@ const createTripDayTemplate = (date, number) => {
 };
 
 export default class TripDay extends AbstractView {
-  constructor(date, number, ...events) {
+  constructor(date, counter, ...events) {
     super();
 
     this._date = date;
-    this._number = number;
+    this._counter = counter;
     this._events = events;
   }
 
   getTemplate() {
-    return createTripDayTemplate(this._date, this._number, this._events);
+    return createTripDayTemplate(this._date, this._counter, this._events);
   }
 }
 

@@ -1,4 +1,5 @@
 import Abstract from "../view/abstract";
+import DOMPurify from 'dompurify';
 
 export const RenderPosition = {
   AFTERBEGIN: `AFTERBEGIN`,
@@ -42,7 +43,7 @@ export const replace = (newChild, oldChild) => {
 
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
+  newElement.innerHTML = DOMPurify.sanitize(template);
 
   return newElement.firstElementChild;
 };

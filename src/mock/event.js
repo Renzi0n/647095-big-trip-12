@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomElement, getRandomNumberElements, getRandomBooleanValue} from '../utils/common.js';
+import {getRandomInteger, getRandomElement, getRandomCountElements, getRandomBooleanValue} from '../utils/common.js';
 
 const CITIES = [`London`, `Paris`, `Keln`, `Moscow`, `Liverpool`, `Manchester`];
 const MAX_EVENT_PRICE = 1000;
@@ -32,7 +32,7 @@ const generatePlaceInfo = () => {
   }
 
   return {
-    description: getRandomNumberElements(PLACE_DESCRIPTION).slice(0, MAX_DESCRIPTIONS),
+    description: getRandomCountElements(PLACE_DESCRIPTION).slice(0, MAX_DESCRIPTIONS),
     photos,
   };
 };

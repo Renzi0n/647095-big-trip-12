@@ -9,31 +9,31 @@ import {render, RenderPosition, remove} from './utils/render.js';
 import {MenuItem, UpdateType} from './consts.js';
 
 
-const AUTHORIZATION = `Basic we222324223fd52`;
+const AUTHORIZATION = `Basic we3432SF2d52`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
 
-const tripEventsMainNode = document.querySelector(`.trip-events`);
-const tripControlsNode = document.querySelector(`.trip-controls`);
+const tripEventsMainElement = document.querySelector(`.trip-events`);
+const tripControlsElement = document.querySelector(`.trip-controls`);
 
 
 const api = new Api(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
-const filterPresenter = new FilterPresenter(tripControlsNode, filterModel, eventsModel);
+const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
 const menuComponent = new MenuView();
-const tripPresenter = new TripPresenter(tripEventsMainNode, eventsModel, filterModel, api);
+const tripPresenter = new TripPresenter(tripEventsMainElement, eventsModel, filterModel, api);
 
 
 api.getAllData()
   .then((events) => {
     eventsModel.setEvents(UpdateType.INIT, events);
-    render(tripControlsNode, menuComponent, RenderPosition.AFTERBEGIN);
+    render(tripControlsElement, menuComponent, RenderPosition.AFTERBEGIN);
     menuComponent.setMenuClickHandler(handleSiteMenuClick);
   })
   .catch(() => {
     eventsModel.setEvents(UpdateType.INIT, []);
-    render(tripControlsNode, menuComponent, RenderPosition.AFTERBEGIN);
+    render(tripControlsElement, menuComponent, RenderPosition.AFTERBEGIN);
     menuComponent.setMenuClickHandler(handleSiteMenuClick);
   });
 
@@ -54,14 +54,14 @@ const handleSiteMenuClick = (menuItem) => {
       tripPresenter.destroy();
 
       statsComponent = new StatsView(eventsModel.getEvents());
-      render(tripEventsMainNode, statsComponent, RenderPosition.BEFOREEND);
+      render(tripEventsMainElement, statsComponent, RenderPosition.BEFOREEND);
       break;
     case MenuItem.NEW_EVENT:
       if (statsComponent !== null) {
         remove(statsComponent);
       }
       tripPresenter.destroy();
-      tripPresenter.init();
+      tripPresenter.init(true);
       tripPresenter.createEvent(() => menuComponent.setMenuItem(MenuItem.TABLE));
       menuComponent.resetMenuItem();
       break;

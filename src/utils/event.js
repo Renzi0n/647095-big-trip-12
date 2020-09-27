@@ -1,4 +1,4 @@
-import {SUFFIX, TRANSPORT_TYPES, FilterType} from '../consts.js';
+import {Suffix, TRANSPORT_TYPES, FilterType} from '../consts.js';
 import moment from "moment";
 
 const getCurrentDate = () => {
@@ -9,23 +9,11 @@ const getCurrentDate = () => {
 };
 
 const isEventFuture = (date) => {
-  if (date === null) {
-    return false;
-  }
-
-  const currentDate = getCurrentDate();
-
-  return moment(currentDate).isBefore(date);
+  return date === null ? false : moment(getCurrentDate()).isBefore(date);
 };
 
 const isEventExpired = (date) => {
-  if (date === null) {
-    return false;
-  }
-
-  const currentDate = getCurrentDate();
-
-  return moment(currentDate).isAfter(date);
+  return date === null ? false : moment(getCurrentDate()).isAfter(date);
 };
 
 export const humanizeDate = (date) => {
@@ -33,11 +21,11 @@ export const humanizeDate = (date) => {
 };
 
 export const generateSuffix = (type) => {
-  return TRANSPORT_TYPES.includes(type) ? SUFFIX.transport : SUFFIX.place;
+  return TRANSPORT_TYPES.includes(type) ? Suffix.TRANSPORT : Suffix.PLACE;
 };
 
 export const sortEventsDates = (events) => {
-  const sortedEvents = events.sort((next, prev) => { // Сортируем точки маршрута по возрастанию даты
+  const sortedEvents = events.sort((next, prev) => {
     return next.date.getTime() - prev.date.getTime();
   });
 
@@ -59,11 +47,7 @@ export const sortEventsTime = (eventA, eventB) => {
 };
 
 export const isDatesEqual = (dateA, dateB) => {
-  if (dateA === null && dateB === null) {
-    return true;
-  }
-
-  return moment(dateA).isSame(dateB, `day`);
+  return dateA === null && dateB === null ? true : moment(dateA).isSame(dateB, `day`);
 };
 
 export const filterEvents = (events) => {
@@ -85,7 +69,7 @@ export const getEventDuration = (timeStart, timeOver) => {
   const duration = timeOver ? new Date(timeOver - timeStart) : timeStart;
   const min = Math.round(duration / 60000);
 
-  const minInHour = min % 60 === 0 ? `` : `${min % 60}M`;
+  const minInHour = min % 60 ? `` : `${min % 60}M`;
   let hours = ``;
   if (min > 60 * 24) {
     hours = Math.round(Math.trunc(min / 60)) % 24;

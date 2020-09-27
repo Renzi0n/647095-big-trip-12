@@ -17,8 +17,8 @@ export const State = {
 };
 
 export default class Event {
-  constructor(eventListContainer, changeData, changeMode) {
-    this._eventListContainer = eventListContainer;
+  constructor(eventListContainerElement, changeData, changeMode) {
+    this._eventListContainerElement = eventListContainerElement;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
@@ -50,7 +50,7 @@ export default class Event {
     this._eventEditComponent.setFavoriteHandler(this._handleIsFavorite);
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
-      render(this._eventListContainer, this._eventComponent, RenderPosition.BEFOREEND);
+      render(this._eventListContainerElement, this._eventComponent, RenderPosition.BEFOREEND);
       return;
     }
 
@@ -122,6 +122,14 @@ export default class Event {
     this._mode = Mode.DEFAULT;
   }
 
+  _escKeyDownHandler(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      this._eventEditComponent.reset(this._event);
+      this._replaceFormToEvent();
+    }
+  }
+
   _handleDeleteClick(event) {
     this._changeData(
         UserAction.DELETE_EVENT,
@@ -143,14 +151,6 @@ export default class Event {
             }
         )
     );
-  }
-
-  _escKeyDownHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
-      evt.preventDefault();
-      this._eventEditComponent.reset(this._event);
-      this._replaceFormToEvent();
-    }
   }
 
   _handleFormClose() {
