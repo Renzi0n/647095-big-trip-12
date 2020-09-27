@@ -9,7 +9,7 @@ import {render, RenderPosition, remove} from './utils/render.js';
 import {MenuItem, UpdateType} from './consts.js';
 
 
-const AUTHORIZATION = `Basic we3432SF2d52`;
+const AUTHORIZATION = `Basic we3432SdwdwF2d52`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
 
