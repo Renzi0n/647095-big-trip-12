@@ -4,7 +4,7 @@ import {getTripTitle, getTripDates, getTripPrice} from '../utils/trip-info.js';
 const createTripInfoTemplate = (events) => {
   let title = ``;
   let dates = ``;
-  let price = ``;
+  let price = `0`;
 
   if (events.length) {
     title = getTripTitle(events);

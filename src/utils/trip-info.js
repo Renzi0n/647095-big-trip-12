@@ -2,7 +2,7 @@ import moment from "moment";
 
 export const getTripTitle = (events) => {
   const firstCity = events[0].city;
-  const secondCity = events.length > 3 ? `...` : events[1].city;
+  const secondCity = events.length > 3 ? events[1].city : `...`;
   const lastCity = events[events.length - 1].city;
 
   return `${firstCity} &mdash; ${secondCity} &mdash; ${lastCity}`;

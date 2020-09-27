@@ -11,7 +11,7 @@ export const getRandomElement = (elements) => {
   return elements[randomIndex];
 };
 
-export const getRandomNumberElements = (elements) => {
+export const getRandomCountElements = (elements) => {
   const randomNumber = getRandomInteger(0, elements.length - 1);
 
   return elements.slice(0, randomNumber);
