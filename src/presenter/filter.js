@@ -3,8 +3,8 @@ import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {UpdateType} from "../consts.js";
 
 export default class Filter {
-  constructor(filterContainerElement, filterModel, eventsModel) {
-    this._filterContainerElement = filterContainerElement;
+  constructor(filterElement, filterModel, eventsModel) {
+    this._filterElement = filterElement;
     this._filterModel = filterModel;
     this._eventsModel = eventsModel;
     this._currentFilter = null;
@@ -27,7 +27,7 @@ export default class Filter {
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
-      render(this._filterContainerElement, this._filterComponent, RenderPosition.BEFOREEND);
+      render(this._filterElement, this._filterComponent, RenderPosition.BEFOREEND);
       return;
     }
 

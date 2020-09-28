@@ -18,11 +18,7 @@ const createEventOffersTemplate = (offers) => {
 };
 
 const getTimeOfDate = (date) => {
-  if (!(date instanceof Date)) {
-    return ``;
-  }
-
-  return moment(date).format(`H:mm`);
+  return date instanceof Date ? moment(date).format(`H:mm`) : ``;
 };
 
 const createEventTemplate = (event) => {

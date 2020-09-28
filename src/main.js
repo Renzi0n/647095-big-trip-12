@@ -9,7 +9,7 @@ import {render, RenderPosition, remove} from './utils/render.js';
 import {MenuItem, UpdateType} from './consts.js';
 
 
-const AUTHORIZATION = `Basic we3432SdwdwF2d52`;
+const AUTHORIZATION = `Basic we3fdgre3d52`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
 
@@ -57,9 +57,7 @@ const handleSiteMenuClick = (menuItem) => {
       render(tripEventsMainElement, statsComponent, RenderPosition.BEFOREEND);
       break;
     case MenuItem.NEW_EVENT:
-      if (statsComponent !== null) {
-        remove(statsComponent);
-      }
+      remove(statsComponent);
       tripPresenter.destroy();
       tripPresenter.init(true);
       tripPresenter.createEvent(() => menuComponent.setMenuItem(MenuItem.TABLE));

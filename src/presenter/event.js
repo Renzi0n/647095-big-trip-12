@@ -17,8 +17,8 @@ export const State = {
 };
 
 export default class Event {
-  constructor(eventListContainerElement, changeData, changeMode) {
-    this._eventListContainerElement = eventListContainerElement;
+  constructor(eventListElement, changeData, changeMode) {
+    this._eventListElement = eventListElement;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
@@ -50,7 +50,7 @@ export default class Event {
     this._eventEditComponent.setFavoriteHandler(this._handleIsFavorite);
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
-      render(this._eventListContainerElement, this._eventComponent, RenderPosition.BEFOREEND);
+      render(this._eventListElement, this._eventComponent, RenderPosition.BEFOREEND);
       return;
     }
 
