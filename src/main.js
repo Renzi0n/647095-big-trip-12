@@ -11,7 +11,7 @@ import {render, RenderPosition, remove} from './utils/render.js';
 import {MenuItem, UpdateType} from './consts.js';
 
 
-const AUTHORIZATION = `Basic wedwqdq3423332`;
+const AUTHORIZATION = `Basic wedwqfsd23332`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `bigtrip-cache`;
 const STORE_VER = `v1`;
@@ -80,12 +80,7 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (e
 
 
 window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
-    .then(() => {
-      console.log(`ServiceWorker available`); // eslint-disable-line
-    }).catch(() => {
-      console.error(`ServiceWorker isn't available`); // eslint-disable-line
-    });
+  navigator.serviceWorker.register(`/sw.js`);
 });
 
 window.addEventListener(`online`, () => {
