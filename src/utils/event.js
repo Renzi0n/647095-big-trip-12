@@ -69,7 +69,7 @@ export const getEventDuration = (timeStart, timeOver) => {
   const duration = timeOver ? new Date(timeOver - timeStart) : timeStart;
   const min = Math.round(duration / 60000);
 
-  const minInHour = min % 60 ? `` : `${min % 60}M`;
+  const minInHour = min % 60 ? `${min % 60}M` : ``;
   let hours = ``;
   if (min > 60 * 24) {
     hours = Math.round(Math.trunc(min / 60)) % 24;

@@ -122,7 +122,8 @@ const createEventEditTemplate = (event) => {
           </button>
 
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite"
-          ${isFavorite ? `checked` : ``}>
+          ${isFavorite ? `checked` : ``}
+          ${isDisabled ? `disabled` : ``}>
           <label class="event__favorite-btn" for="event-favorite-1">
             <span class="visually-hidden">Add to favorite</span>
             <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -222,16 +223,24 @@ export default class EventEdit extends SmartView {
     }
   }
 
-  _dateStartChangeHandler([userDate]) {
-    this.updateData({
-      date: userDate
-    });
-  }
+  _getDefaultEvent() {
+    const city = PlacesInfoModel.getPlacesInfo()[0].name;
+    const type = `Flight`;
+    const placeInfo = PlacesInfoModel.getPlacesInfoForCity(city);
 
-  _dateOverChangeHandler([userDate]) {
-    this.updateData({
-      timeOver: userDate
-    });
+    return {
+      type,
+      offers: [],
+      city,
+      price: `0`,
+      date: new Date(),
+      timeOver: new Date(),
+      isFavorite: false,
+      placeInfo: {
+        photos: placeInfo.pictures,
+        description: placeInfo.description
+      }
+    };
   }
 
   removeElement() {
@@ -255,26 +264,6 @@ export default class EventEdit extends SmartView {
     );
   }
 
-  _getDefaultEvent() {
-    const city = PlacesInfoModel.getPlacesInfo()[0].name;
-    const type = `Flight`;
-    const placeInfo = PlacesInfoModel.getPlacesInfoForCity(city);
-
-    return {
-      type,
-      offers: [],
-      city,
-      price: `0`,
-      date: new Date(),
-      timeOver: new Date(),
-      isFavorite: false,
-      placeInfo: {
-        photos: placeInfo.pictures,
-        description: placeInfo.description
-      }
-    };
-  }
-
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
@@ -290,6 +279,18 @@ export default class EventEdit extends SmartView {
     this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
     this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typesHandler);
     this.getElement().querySelector(`#event-destination-1`).addEventListener(`change`, this._cityHandler);
+  }
+
+  _dateStartChangeHandler([userDate]) {
+    this.updateData({
+      date: userDate
+    });
+  }
+
+  _dateOverChangeHandler([userDate]) {
+    this.updateData({
+      timeOver: userDate
+    });
   }
 
   setFormCloseHandler(callback) {
@@ -330,6 +331,9 @@ export default class EventEdit extends SmartView {
   }
 
   _formCloseHandler() {
+    this.updateData({
+      isDisabled: false
+    });
     this._callback.formClose();
   }
 
@@ -341,15 +345,26 @@ export default class EventEdit extends SmartView {
   _cityHandler(evt) {
     evt.preventDefault();
     const city = evt.target.value;
-    const pictures = PlacesInfoModel.getPlacesInfoForCity(city).pictures;
-    const description = PlacesInfoModel.getPlacesInfoForCity(city).description;
+    let placeInfo;
+
+    try {
+      placeInfo = PlacesInfoModel.getPlacesInfoForCity(city);
+    } catch (error) {
+      this.updateData({city, isDisabled: true});
+
+      return;
+    }
+
+    const pictures = placeInfo.pictures;
+    const description = placeInfo.description;
 
     this.updateData({
-      city: evt.target.value,
+      city,
       placeInfo: {
         photos: pictures,
-        description,
-      }
+        description
+      },
+      isDisabled: false
     });
   }
 
@@ -361,27 +376,29 @@ export default class EventEdit extends SmartView {
   }
 
   _offersHandler(evt) {
-    if (evt.target.tagName === `INPUT`) {
-      const currentOffer = OffersModel.getOffersForType(this._event.type)
-        .filter((offer) => offer.title === evt.target.value)[0];
+    if (evt.target.tagName !== `INPUT`) {
+      return;
+    }
 
-      if (evt.target.checked) {
-        this.updateData({
-          offers: [
-            ...this._event.offers.slice(),
-            currentOffer
-          ]
-        });
-      } else {
-        const currentIndex = this._event.offers.findIndex((offer) => offer.title === evt.target.value);
+    const currentOffer = OffersModel.getOffersForType(this._event.type)
+      .filter((offer) => offer.title === evt.target.value)[0];
 
-        this.updateData({
-          offers: [
-            ...this._event.offers.slice(0, currentIndex),
-            ...this._event.offers.slice(currentIndex + 1)
-          ]
-        });
-      }
+    if (evt.target.checked) {
+      this.updateData({
+        offers: [
+          ...this._event.offers.slice(),
+          currentOffer
+        ]
+      });
+    } else {
+      const currentIndex = this._event.offers.findIndex((offer) => offer.title === evt.target.value);
+
+      this.updateData({
+        offers: [
+          ...this._event.offers.slice(0, currentIndex),
+          ...this._event.offers.slice(currentIndex + 1)
+        ]
+      });
     }
   }
 }

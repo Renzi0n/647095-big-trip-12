@@ -1,6 +1,4 @@
-import EventsModel from './model/events';
-import PlacesInfoModel from './model/places-info.js';
-import OffersModel from './model/offers.js';
+import EventsModel from '../model/events';
 
 const Method = {
   GET: `GET`,
@@ -28,22 +26,12 @@ export default class Api {
 
   getAllOffers() {
     return this._load({url: `offers`})
-      .then(Api.toJSON)
-      .then((offers) => OffersModel.setOffers(offers));
+      .then(Api.toJSON);
   }
 
   getAllDestinations() {
     return this._load({url: `destinations`})
-      .then(Api.toJSON)
-      .then((destinations) => PlacesInfoModel.setPlacesInfo(destinations));
-  }
-
-  getAllData() {
-    return Promise.all([
-      this.getAllDestinations(),
-      this.getAllOffers(),
-      this.getEvents()
-    ]).then((res) => res[2]);
+      .then(Api.toJSON);
   }
 
   addEvent(event) {
@@ -73,6 +61,16 @@ export default class Api {
     })
       .then(Api.toJSON)
       .then(EventsModel.adaptToClient);
+  }
+
+  sync(data) {
+    return this._load({
+      url: `/points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then(Api.toJSON);
   }
 
   _load({

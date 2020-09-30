@@ -31,3 +31,8 @@ export const MenuItem = {
   STATS: `Stats`,
   NEW_EVENT: `New event`
 };
+export const StoreSubKey = {
+  EVENTS: `events`,
+  PLACES_INFO: `places-info`,
+  OFFERS: `offers`,
+};

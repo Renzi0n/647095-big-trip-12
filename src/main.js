@@ -4,13 +4,18 @@ import FilterPresenter from "./presenter/filter.js";
 import EventsModel from "./model/events.js";
 import FilterModel from "./model/filter.js";
 import StatsView from "./view/stats.js";
-import Api from "./api.js";
+import Api from "./api/index.js";
+import Store from './api/store.js';
+import Provider from './api/provider.js';
 import {render, RenderPosition, remove} from './utils/render.js';
 import {MenuItem, UpdateType} from './consts.js';
 
 
-const AUTHORIZATION = `Basic we3432SdwdwF2d52`;
+const AUTHORIZATION = `Basic wedwqdq3423332`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
+const STORE_PREFIX = `bigtrip-cache`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 
 const tripEventsMainElement = document.querySelector(`.trip-events`);
@@ -18,14 +23,16 @@ const tripControlsElement = document.querySelector(`.trip-controls`);
 
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
 const menuComponent = new MenuView();
-const tripPresenter = new TripPresenter(tripEventsMainElement, eventsModel, filterModel, api);
+const tripPresenter = new TripPresenter(tripEventsMainElement, eventsModel, filterModel, apiWithProvider);
 
 
-api.getAllData()
+apiWithProvider.getAllData()
   .then((events) => {
     eventsModel.setEvents(UpdateType.INIT, events);
     render(tripControlsElement, menuComponent, RenderPosition.AFTERBEGIN);
@@ -53,13 +60,11 @@ const handleSiteMenuClick = (menuItem) => {
       menuComponent.setMenuItem(menuItem);
       tripPresenter.destroy();
 
-      statsComponent = new StatsView(eventsModel.getEvents());
+      statsComponent = new StatsView(eventsModel.getEvents().slice());
       render(tripEventsMainElement, statsComponent, RenderPosition.BEFOREEND);
       break;
     case MenuItem.NEW_EVENT:
-      if (statsComponent !== null) {
-        remove(statsComponent);
-      }
+      remove(statsComponent);
       tripPresenter.destroy();
       tripPresenter.init(true);
       tripPresenter.createEvent(() => menuComponent.setMenuItem(MenuItem.TABLE));
@@ -71,4 +76,23 @@ const handleSiteMenuClick = (menuItem) => {
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
   evt.preventDefault();
   handleSiteMenuClick(MenuItem.NEW_EVENT);
+});
+
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+      console.log(`ServiceWorker available`); // eslint-disable-line
+    }).catch(() => {
+      console.error(`ServiceWorker isn't available`); // eslint-disable-line
+    });
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
 });

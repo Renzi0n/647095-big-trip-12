@@ -254,11 +254,9 @@ export default class Stats extends SmartView {
   }
 
   _setCharts() {
-    if (this._moneyChart !== null || this._transportChart !== null || this._timeSpentChart !== null) {
-      this._moneyChart = null;
-      this._transportChart = null;
-      this._timeSpentChart = null;
-    }
+    this._moneyChart = null;
+    this._transportChart = null;
+    this._timeSpentChart = null;
 
     const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`);
     const transportCtx = this.getElement().querySelector(`.statistics__chart--transport`);
@@ -272,11 +270,9 @@ export default class Stats extends SmartView {
   removeElement() {
     super.removeElement();
 
-    if (this._moneyChart !== null || this._transportChart !== null || this._timeSpentChart !== null) {
-      this._moneyChart = null;
-      this._transportChart = null;
-      this._timeSpentChart = null;
-    }
+    this._moneyChart = null;
+    this._transportChart = null;
+    this._timeSpentChart = null;
   }
 
   restoreHandlers() {
