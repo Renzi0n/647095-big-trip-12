@@ -276,7 +276,7 @@ export default class EventEdit extends SmartView {
 
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__available-offers`).addEventListener(`click`, this._offersHandler);
-    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, this._priceInputHandler);
     this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typesHandler);
     this.getElement().querySelector(`#event-destination-1`).addEventListener(`change`, this._cityHandler);
   }
@@ -370,9 +370,12 @@ export default class EventEdit extends SmartView {
 
   _priceInputHandler(evt) {
     evt.preventDefault();
+    const price = evt.target.value;
+
     this.updateData({
-      price: evt.target.value
-    }, true);
+      price,
+      isDisabled: +price ? false : true
+    });
   }
 
   _offersHandler(evt) {

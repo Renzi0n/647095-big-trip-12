@@ -4,11 +4,11 @@ import FilterPresenter from "./presenter/filter.js";
 import EventsModel from "./model/events.js";
 import FilterModel from "./model/filter.js";
 import StatsView from "./view/stats.js";
-import Api from "./api/index.js";
+import Api from "./api/api.js";
 import Store from './api/store.js';
 import Provider from './api/provider.js';
 import {render, RenderPosition, remove} from './utils/render.js';
-import {MenuItem, UpdateType} from './consts.js';
+import {MenuItem, UpdateType, FilterType} from './consts.js';
 
 
 const AUTHORIZATION = `Basic wedwqfsd23332`;
@@ -55,6 +55,7 @@ const handleSiteMenuClick = (menuItem) => {
       menuComponent.setMenuItem(menuItem);
       tripPresenter.init();
       remove(statsComponent);
+      filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
       break;
     case MenuItem.STATS:
       menuComponent.setMenuItem(menuItem);

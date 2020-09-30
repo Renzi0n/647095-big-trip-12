@@ -19,9 +19,9 @@ export const getTripDates = (events) => {
 
 export const getTripPrice = (events) => {
   return events.reduce((acc, event) => {
-    acc += event.price;
+    acc += +event.price;
     event.offers.forEach((offer) => {
-      acc += offer.price;
+      acc += +offer.price;
     });
 
     return acc;

@@ -5,8 +5,11 @@ import PlacesInfoModel from '../model/places-info.js';
 import OffersModel from '../model/offers.js';
 
 const getSyncedEvents = (items) => {
-  return items.filter(({success}) => success)
-    .map(({payload}) => payload.event);
+  return items
+    .filter(({success}) => success)
+    .map(({payload}) => {
+      return payload.point;
+    });
 };
 
 const createStoreStructure = (items) => {
@@ -110,7 +113,7 @@ export default class Provider {
   }
 
   sync() {
-    const storeEvents = Object.values(this._store.getItems(StoreSubKey.EVENTS));
+    const storeEvents = this._store.getItems(StoreSubKey.EVENTS);
 
     return this._api.sync(storeEvents)
       .then((response) => {
