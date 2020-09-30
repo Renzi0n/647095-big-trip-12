@@ -182,7 +182,7 @@ export default class Trip {
 
     this._currentSortType = sortType;
 
-    this._tripInfoComponent.updateTripInfo(this._eventsModel.getEvents());
+    this._tripInfoComponent.updateTripInfo(this._eventsModel.getEvents().slice());
 
     this._eventNewPresenter.destroy();
 
