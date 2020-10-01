@@ -38,6 +38,14 @@ export default class Api {
       .then((destinations) => PlacesInfoModel.setPlacesInfo(destinations));
   }
 
+  getAllData() {
+    return Promise.all([
+      this.getAllDestinations(),
+      this.getAllOffers(),
+      this.getEvents()
+    ]).then((res) => res[2]);
+  }
+
   addEvent(event) {
     return this._load({
       url: `points`,
@@ -54,14 +62,6 @@ export default class Api {
       url: `points/${event.id}`,
       method: Method.DELETE
     });
-  }
-
-  getAllData() {
-    return Promise.all([
-      this.getAllDestinations(),
-      this.getAllOffers(),
-      this.getEvents()
-    ]).then((res) => res[2]);
   }
 
   updateEvent(event) {
