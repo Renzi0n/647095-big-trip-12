@@ -1,4 +1,5 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
+https://renzi0n.github.io/647095-big-trip-12/
 
 * Студент: [Андрей Решетов](https://htmlacademy.ru/profile/id647095).
 * Наставник: [Алексей Балесный](https://htmlacademy.ru/profile/id221665).
