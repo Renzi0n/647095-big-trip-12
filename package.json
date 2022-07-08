@@ -28,7 +28,7 @@
     "dompurify": "2.1.1",
     "flatpickr": "4.6.6",
     "he": "1.2.0",
-    "moment": "2.28.0",
+    "moment": "2.29.4",
     "nanoid": "3.1.12"
   }
 }
